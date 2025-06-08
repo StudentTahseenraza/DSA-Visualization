@@ -1,0 +1,18 @@
+/* styles/ZoomPanWrapper.css */
+.zoom-pan-container {
+  max-width: 800px;
+  max-height: 400px;
+  overflow: hidden;
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  position: relative;
+  cursor: grab;
+}
+
+.zoom-pan-container:active {
+  cursor: grabbing;
+}
+
+.svg-wrapper {
+  transition: transform 0.1s ease-out;
+}

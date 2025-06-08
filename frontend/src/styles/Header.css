@@ -1,0 +1,67 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.header h1 {
+  color: #E5E5E5;
+  font-size: 2rem;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(107, 91, 149, 0.7);
+}
+
+.header-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.algorithm-select,
+.speed-select,
+.export-btn,
+.login-btn {
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #2A2A3A 0%, #1C1C2B 100%);
+  color: #E5E5E5;
+  border: 1px solid rgba(107, 91, 149, 0.5);
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(107, 91, 149, 0.3);
+}
+
+.algorithm-select:hover,
+.speed-select:hover,
+.export-btn:hover,
+.login-btn:hover {
+  background: linear-gradient(135deg, #3A3A4A 0%, #2A2A3A 100%);
+  box-shadow: 0 0 15px rgba(107, 91, 149, 0.5);
+}
+
+.export-btn.video {
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+}
+
+.export-btn.gif {
+  background: linear-gradient(135deg, #FF6B6B 0%, #D94A4A 100%);
+}
+
+.export-btn,
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

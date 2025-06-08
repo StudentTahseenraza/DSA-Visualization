@@ -1,0 +1,39 @@
+.custom-array-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.custom-array-input input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(28, 28, 43, 0.5);
+  color: #E5E5E5;
+  border: 1px solid rgba(107, 91, 149, 0.5);
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(107, 91, 149, 0.3);
+  transition: all 0.3s;
+}
+
+.custom-array-input input:focus {
+  outline: none;
+  box-shadow: 0 0 15px rgba(107, 91, 149, 0.5);
+}
+
+.custom-array-input button {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #4A90E2 0%, #6B5B95 100%);
+  color: #E5E5E5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(107, 91, 149, 0.3);
+}
+
+.custom-array-input button:hover {
+  background: linear-gradient(135deg, #357ABD 0%, #5A4A84 100%);
+  box-shadow: 0 0 15px rgba(107, 91, 149, 0.5);
+}
+

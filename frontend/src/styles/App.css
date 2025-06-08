@@ -1,0 +1,101 @@
+/* styles/App.css */
+:root {
+  --bg-color: #fff;
+  --text-color: #333;
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --highlight-color: #f1c40f;
+  --error-color: #e74c3c;
+}
+
+[data-theme='dark'] {
+  --bg-color: #1e272e;
+  --text-color: #ecf0f1;
+  --primary-color: #2980b9;
+  --secondary-color: #27ae60;
+  --highlight-color: #e67e22;
+  --error-color: #c0392b;
+}
+
+.app {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+.left-panel,
+.right-panel {
+  flex: 1;
+}
+
+.visual-animation-btn,
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.visual-animation-btn:hover,
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+.visualization-container {
+  margin-top: 20px;
+}
+
+.comparison-results {
+  margin: 20px 0;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.graph-editor,
+.bst-controls,
+.graph-controls,
+.linked-list-controls,
+.heap-controls,
+.trie-controls {
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+input,
+select {
+  padding: 8px;
+  border: 1px solid var(--text-color);
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* styles/App.css */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.zoom-controls label {
+  color: var(--text-color);
+}
+
+.zoom-controls input {
+  width: 100px;
+}

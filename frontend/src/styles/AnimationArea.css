@@ -1,0 +1,45 @@
+.animation-area {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  perspective: 1000px;
+  height: 300px;
+  align-items: flex-end;
+  background: rgba(28, 28, 43, 0.5);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 0 20px rgba(107, 91, 149, 0.3);
+  backdrop-filter: blur(5px);
+  flex: 1;
+}
+
+.bar {
+  width: 30px;
+  background: linear-gradient(135deg, #4A90E2 0%, #6B5B95 100%);
+  border-radius: 4px;
+  transform-style: preserve-3d;
+  transform: rotateX(20deg) rotateY(20deg);
+  box-shadow: 0 0 15px rgba(107, 91, 149, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s, height 0.5s, box-shadow 0.3s;
+  position: relative;
+}
+
+.bar.current {
+  background: linear-gradient(135deg, #FF6B6B 0%, #D94A4A 100%);
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+}
+
+.bar.min {
+  background: linear-gradient(135deg, #FFD60A 0%, #E5B607 100%);
+  box-shadow: 0 0 20px rgba(255, 214, 10, 0.7);
+}
+
+.bar-value {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #E5E5E5;
+  font-size: 1rem;
+  text-shadow: 0 0 5px rgba(107, 91, 149, 0.5);
+}

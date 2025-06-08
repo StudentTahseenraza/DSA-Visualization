@@ -1,0 +1,30 @@
+.code-viewer {
+  background: rgba(28, 28, 43, 0.5); /* Glassmorphism background */
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(107, 91, 149, 0.3);
+  backdrop-filter: blur(5px); /* Glassmorphism effect */
+}
+
+.code-viewer h3 {
+  color: #E5E5E5;
+  font-size: 1.2rem;
+  margin: 0 0 10px 0;
+  text-shadow: 0 0 5px rgba(107, 91, 149, 0.5);
+}
+
+pre {
+  margin: 0;
+}
+
+.code-line {
+  color: #E5E5E5;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.code-line.highlight {
+  background: rgba(107, 91, 149, 0.3);
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(107, 91, 149, 0.5);
+}
