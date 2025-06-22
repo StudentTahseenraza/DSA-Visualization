@@ -56,20 +56,18 @@ const App = () => {
 
   const resetZoom = () => setZoomScale(1);
 
-  
-
   const fetchAlgorithmSteps = async () => {
     setIsLoading(true);
     try {
       let response;
       if (algorithmType === 'sorting') {
         if (!array || !Array.isArray(array)) throw new Error('Invalid array input');
-        response = await axios.post(`http://localhost:5000/api/sort/${selectedAlgorithm}`, { array });
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/sort/${selectedAlgorithm}`, { array });
         setAlgorithmData(response.data);
       } else if (algorithmType === 'bst') {
         if (!bstValue || isNaN(parseInt(bstValue))) throw new Error('Invalid BST value');
         const operation = selectedAlgorithm === 'avl' ? 'avlInsert' : bstOperation;
-        response = await axios.post(`http://localhost:5000/api/bst/${operation}`, {
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/bst/${operation}`, {
           value: parseInt(bstValue),
           treeState: bstTree,
         });
@@ -77,7 +75,7 @@ const App = () => {
         setBstTree(response.data.tree);
       } else if (algorithmType === 'graph') {
         if (!graph || !graphStartNode || !graph[graphStartNode]) throw new Error('Invalid graph or start node');
-        response = await axios.post(`http://localhost:5000/api/graph/${selectedAlgorithm}`, {
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/graph/${selectedAlgorithm}`, {
           graph,
           start: graphStartNode,
         });
@@ -85,7 +83,7 @@ const App = () => {
       } else if (algorithmType === 'linkedList') {
         if (listOperation !== 'traverse' && (!listValue || isNaN(parseInt(listValue))))
           throw new Error('Invalid linked list value');
-        response = await axios.post(`http://localhost:5000/api/linkedList/${listOperation}`, {
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/linkedList/${listOperation}`, {
           value: parseInt(listValue),
           listState: linkedList,
         });
@@ -94,7 +92,7 @@ const App = () => {
       } else if (algorithmType === 'heap') {
         if (heapOperation !== 'heapify' && (!heapValue || isNaN(parseInt(heapValue))))
           throw new Error('Invalid heap value');
-        response = await axios.post(`http://localhost:5000/api/heap/${heapOperation}`, {
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/heap/${heapOperation}`, {
           value: parseInt(heapValue),
           heapState: heap,
         });
@@ -102,7 +100,7 @@ const App = () => {
         setHeap(response.data.heap);
       } else if (algorithmType === 'trie') {
         if (!trieWord) throw new Error('Invalid trie word');
-        response = await axios.post(`http://localhost:5000/api/trie/${trieOperation}`, {
+        response = await axios.post(`https://dsa-visualization-1.onrender.com/api/trie/${trieOperation}`, {
           word: trieWord,
           trieState: trie,
         });
@@ -127,7 +125,7 @@ const App = () => {
       const results = [];
       for (const algo of algorithms) {
         const startTime = performance.now();
-        const response = await axios.post(`http://localhost:5000/api/sort/${algo}`, { array });
+        const response = await axios.post(`https://dsa-visualization-1.onrender.com/api/sort/${algo}`, { array });
         const endTime = performance.now();
         results.push({ algorithm: algo, time: (endTime - startTime).toFixed(2) });
       }

@@ -1,0 +1,22 @@
+/* frontend/src/styles/ErrorBoundary.css */
+.error-boundary {
+  padding: 20px;
+  background-color: #f1c40f; /* Soft yellow for visibility */
+  color: #333;
+  text-align: center;
+  border-radius: 5px;
+  margin: 20px;
+}
+
+.error-boundary {
+  margin-bottom: 10px;
+}
+
+.error-boundary button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
