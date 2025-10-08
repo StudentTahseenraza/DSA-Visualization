@@ -179,7 +179,9 @@ const AlgorithmPage = () => {
   const { isDarkMode } = useTheme();
 
 
-  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "http://localhost:5000/api";
+  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+
 
   // Set default algorithm based on category
   useEffect(() => {
