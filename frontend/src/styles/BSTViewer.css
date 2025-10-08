@@ -1,18 +1,132 @@
-/* styles/BSTViewer.css */
+/* styles/BSTViewer.css - Updated */
 .bst-viewer {
-  background-color: var(--bg-color);
-  padding: 20px;
-  border: 1px solid var(--text-color);
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 }
 
-.svg-container {
-  max-width: 800px;
-  max-height: 400px;
-  overflow: auto;
-  border: 1px solid var(--text-color);
+.tree-info {
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #2d3748;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.tree-info h4 {
+  color: #e2e8f0;
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+}
+
+.tree-info p {
+  color: #cbd5e0;
+  margin: 5px 0;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+}
+
+.bst-viewer svg {
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  background: #1a202c;
+  max-width: 100%;
+  height: auto;
+}
+
+.tree-controls {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.tree-controls small {
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+/* styles/ZoomPanWrapper.css - Updated */
+.zoom-pan-container {
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  position: relative;
+  background: #1a202c;
+}
+
+.svg-wrapper {
+  transition: transform 0.1s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
   border-radius: 5px;
+}
+
+.zoom-controls button {
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.zoom-controls button:hover {
+  background: #3182ce;
+}
+
+.zoom-controls span {
+  color: white;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .zoom-pan-container {
+    height: 400px;
+  }
+  
+  .tree-info {
+    padding: 10px;
+  }
+  
+  .tree-info h4 {
+    font-size: 1.1rem;
+  }
+  
+  .tree-info p {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .zoom-pan-container {
+    height: 300px;
+  }
+  
+  .zoom-controls {
+    bottom: 5px;
+    right: 5px;
+    flex-direction: column;
+    gap: 2px;
+  }
 }

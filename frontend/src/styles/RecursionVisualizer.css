@@ -1,0 +1,110 @@
+/* styles/RecursionVisualizer.css */
+.recursion-visualizer {
+  padding: 20px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.recursion-info {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.recursion-info h3 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.message {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.recursion-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.recursion-level {
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #9e9e9e;
+}
+
+.recursion-level.current {
+  background-color: #e3f2fd;
+  border-left-color: #2196f3;
+}
+
+.level-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+.level-content {
+  font-family: monospace;
+}
+
+.result-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.result-container h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.result-value {
+  padding: 10px;
+  background-color: #c8e6c9;
+  border: 1px solid #66bb6a;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.matrix-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.matrix-container h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.matrix {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matrix-row {
+  display: flex;
+  gap: 2px;
+}
+
+.matrix-cell {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  font-size: 14px;
+}
+
+.matrix-cell.current {
+  background-color: #ffecb3;
+  border-color: #ffc107;
+  font-weight: bold;
+}

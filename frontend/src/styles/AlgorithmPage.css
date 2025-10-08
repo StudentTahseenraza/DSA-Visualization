@@ -1,0 +1,422 @@
+/* Update in styles/AlgorithmPage.css */
+
+.algorithm-page {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.algorithm-layout {
+  display: flex;
+  gap: 20px;
+  min-height: calc(100vh - 100px);
+}
+
+.visualization-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 600px;
+}
+
+/* TOP ROW: Controls and Explanation Side by Side */
+.top-content-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-height: 180px;
+}
+
+.controls-panel,
+.explanation-panel {
+  background: #2d3748;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+}
+
+.controls-panel h3,
+.explanation-panel h3 {
+  color: #e2e8f0;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.explanation-content {
+  background: #1a202c;
+  padding: 15px;
+  border-radius: 8px;
+  color: #cbd5e0;
+  line-height: 1.5;
+  flex: 1;
+  overflow-y: auto;
+  font-size: 14px;
+  min-height: 80px;
+}
+
+/* MIDDLE ROW: Visualization and Pseudocode Side by Side */
+.main-content-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-height: 500px;
+  flex: 1;
+}
+
+.visualization-panel,
+.pseudocode-panel {
+  background: #2d3748;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 450px;
+}
+
+.visualization-panel h3,
+.pseudocode-panel h3 {
+  color: #e2e8f0;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+/* FIXED: Sorting Visualization Container */
+.sorting-visualization {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: rgba(26, 32, 44, 0.9);
+  border-radius: 8px;
+  padding: 15px;
+  min-height: 380px;
+  border: 2px solid #4a5568;
+}
+
+/* Animation Area - Bars */
+.animation-area {
+  flex: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 15px 15px 15px;
+  background: rgba(20, 25, 35, 0.7);
+  border-radius: 8px;
+  min-height: 250px;
+  position: relative;
+  overflow: visible;
+  border: 1px solid #4a5568;
+}
+
+/* Line Chart - Below Bars */
+.line-chart {
+  flex: 1;
+  background: rgba(20, 25, 35, 0.7);
+  border-radius: 8px;
+  padding: 15px;
+  min-height: 120px;
+  border: 1px solid #4a5568;
+}
+
+/* Ensure Chart.js renders properly */
+.line-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Pseudocode container */
+.pseudocode-panel .sorting-viewer {
+  flex: 1;
+  background: #1a202c;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+  min-height: 380px;
+  border: 1px solid #4a5568;
+}
+
+/* BOTTOM: Control Buttons and Custom Input */
+.bottom-content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-height: 120px;
+}
+
+/* Control buttons styling */
+.control-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #2d3748;
+  border-radius: 8px;
+  border: 1px solid #4a5568;
+}
+
+.control-buttons button {
+  padding: 8px 16px;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.control-buttons button:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.control-buttons button:disabled {
+  background: #4a5568;
+  cursor: not-allowed;
+}
+
+.control-buttons span {
+  color: #e2e8f0;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Custom array input */
+.custom-array-container {
+  background: #2d3748;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #4a5568;
+}
+
+.custom-array-container h4 {
+  color: #e2e8f0;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+}
+
+.custom-array-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.custom-array-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #4a5568;
+  border-radius: 5px;
+  background: #1a202c;
+  color: white;
+  font-size: 14px;
+}
+
+.custom-array-input button {
+  padding: 8px 16px;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.custom-array-input button:hover {
+  background: #3182ce;
+}
+
+/* Control group in controls panel */
+.control-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.control-group select,
+.control-group input {
+  padding: 8px 12px;
+  border: 1px solid #4a5568;
+  border-radius: 5px;
+  background: #1a202c;
+  color: white;
+  min-width: 120px;
+  font-size: 14px;
+}
+
+.control-group button {
+  padding: 8px 16px;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 14px;
+}
+
+.control-group button:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.control-group button:disabled {
+  background: #4a5568;
+  cursor: not-allowed;
+}
+
+.play-pause-btn {
+  background: #48bb78 !important;
+}
+
+.play-pause-btn:hover {
+  background: #38a169 !important;
+}
+
+.reset-btn {
+  background: #ed8936 !important;
+}
+
+.reset-btn:hover {
+  background: #dd6b20 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .top-content-area {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  
+  .main-content-area {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  
+  .algorithm-layout {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .algorithm-page {
+    padding: 15px;
+  }
+  
+  .controls-panel,
+  .explanation-panel,
+  .visualization-panel,
+  .pseudocode-panel {
+    padding: 15px;
+  }
+  
+  .control-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .control-group select,
+  .control-group input {
+    min-width: auto;
+  }
+  
+  .sorting-visualization {
+    min-height: 300px;
+  }
+  
+  .animation-area {
+    min-height: 200px;
+  }
+  
+  .line-chart {
+    min-height: 100px;
+  }
+}
+
+/* Matrix input styles */
+.matrix-input-container {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  margin: 10px 0;
+}
+
+.matrix-input-container h5 {
+  color: white;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.matrix-help {
+  color: #bdc3c7;
+  font-size: 0.9em;
+  text-align: center;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.matrix-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-family: monospace;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.matrix-textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.create-graph-btn {
+  background: linear-gradient(45deg, #27ae60, #2ecc71);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.create-graph-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.create-graph-btn:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.matrix-input-btn {
+  background: linear-gradient(45deg, #9b59b6, #8e44ad);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.matrix-input-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}

@@ -1,0 +1,116 @@
+/* styles/QueueVisualizer.css */
+.queue-visualizer {
+  padding: 20px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.queue-info {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.queue-info h3 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.message {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.queue-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 100px;
+}
+
+.queue-front,
+.queue-rear {
+  padding: 8px 12px;
+  background-color: #795548;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.queue-items {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  min-height: 60px;
+  align-items: center;
+}
+
+.queue-empty {
+  flex: 1;
+  text-align: center;
+  color: #9e9e9e;
+  font-style: italic;
+}
+
+.queue-item {
+  width: 60px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2196f3;
+  color: white;
+  border: 2px solid #1976d2;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.queue-item.front {
+  background-color: #4caf50;
+  border-color: #388e3c;
+  animation: pulse 2s infinite;
+}
+
+.queue-item.rear {
+  background-color: #ff9800;
+  border-color: #f57c00;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.operation-value {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.visited-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.visited-container h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+}
+
+.visited-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.visited-node {
+  padding: 4px 8px;
+  background-color: #c8e6c9;
+  border: 1px solid #66bb6a;
+  border-radius: 4px;
+  font-size: 14px;
+}

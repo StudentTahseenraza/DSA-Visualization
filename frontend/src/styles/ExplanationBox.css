@@ -1,26 +1,108 @@
-/* styles/ExplanationBox.css */
+/* frontend/src/styles/ExplanationBox.css (updated) */
 .explanation-box {
-  background-color: var(--bg-color);
+  background: rgba(28, 28, 43, 0.8);
   padding: 20px;
-  border: 1px solid var(--text-color);
-  border-radius: 5px;
-  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(107, 91, 149, 0.3);
+  backdrop-filter: blur(5px);
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.explanation-box h3 {
+  color: #E5E5E5;
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 5px rgba(107, 91, 149, 0.5);
+  border-bottom: 2px solid rgba(107, 91, 149, 0.5);
+  padding-bottom: 8px;
+}
+
+.explanation-content {
+  flex: 1;
+  margin-bottom: 15px;
+}
+
+.current-action {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.action-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.current-action p {
+  color: #E5E5E5;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.pseudocode-context {
+  background: rgba(42, 42, 58, 0.5);
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #6B5B95;
+}
+
+.context-label {
+  color: #6B5B95;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.pseudocode-context code {
+  color: #f1c40f;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
 }
 
 .notes-section {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  border-top: 1px solid rgba(107, 91, 149, 0.3);
+  padding-top: 15px;
+}
+
+.notes-section h4 {
+  color: #E5E5E5;
+  font-size: 1rem;
+  margin: 0 0 10px 0;
 }
 
 .notes-section textarea {
-  padding: 8px;
-  border: 1px solid var(--text-color);
-  border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(107, 91, 149, 0.5);
+  border-radius: 6px;
+  background: rgba(42, 42, 58, 0.5);
+  color: #E5E5E5;
   resize: vertical;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.notes-section textarea:focus {
+  outline: none;
+  border-color: #6B5B95;
+  box-shadow: 0 0 10px rgba(107, 91, 149, 0.3);
 }
 
 .notes-section button {
-  align-self: flex-start;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #4A90E2 0%, #6B5B95 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notes-section button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

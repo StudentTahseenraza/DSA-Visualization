@@ -1,11 +1,248 @@
+/* components/styles/GraphViewer.css */
 .graph-viewer {
   width: 100%;
-  height: 450px;
-  border: 1px solid #ccc;
+  height: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .graph-info {
-  margin-top: 10px;
-  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.graph-info h4 {
+  margin: 0 0 10px 0;
+  color: white;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.action-description {
+  color: #f1c40f;
+  font-size: 1.1em;
+  text-align: center;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.graph-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.stat-item {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+}
+
+.stat-label {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #3498db;
+}
+
+.stat-value {
+  color: #2ecc71;
+}
+
+.graph-visualization-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 400px;
+  overflow: auto;
+}
+
+/* Matrix Input Section */
+.matrix-input-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.toggle-matrix-btn {
+  background: linear-gradient(45deg, #9b59b6, #8e44ad);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.toggle-matrix-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.matrix-input-container {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.matrix-input-container h5 {
+  color: white;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.matrix-help {
+  color: #bdc3c7;
+  font-size: 0.9em;
+  text-align: center;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.matrix-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-family: monospace;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.matrix-textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.create-graph-btn {
+  background: linear-gradient(45deg, #27ae60, #2ecc71);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.create-graph-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.create-graph-btn:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Creation Controls */
+.creation-controls {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.creation-progress {
+  color: #f1c40f;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.creation-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.creation-buttons button {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.creation-buttons button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.creation-buttons button:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .graph-viewer {
+    padding: 10px;
+  }
+  
+  .graph-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stat-item {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .creation-buttons {
+    flex-direction: column;
+  }
+  
+  .creation-buttons button {
+    width: 100%;
+  }
+  
+  .graph-visualization-container {
+    min-height: 300px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .graph-info h4 {
+    font-size: 1.2em;
+  }
+  
+  .action-description {
+    font-size: 1em;
+  }
+  
+  .graph-visualization-container {
+    min-height: 250px;
+  }
 }

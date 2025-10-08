@@ -1,0 +1,345 @@
+/* components/styles/DynamicProgrammingViewer.css */
+.dp-viewer {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 15px;
+  overflow: auto;
+}
+
+/* Common DP Styles */
+.dp-viewer h4 {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dp-table {
+  overflow-x: auto;
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.dp-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dp-table th,
+.dp-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+  font-family: monospace;
+}
+
+.dp-table th {
+  background: #2c3e50;
+  color: white;
+  font-weight: bold;
+}
+
+.dp-table td {
+  background: #ecf0f1;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.dp-cell.current {
+  background: #3498db !important;
+  color: white !important;
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+  animation: dp-highlight 2s infinite;
+}
+
+@keyframes dp-highlight {
+  0%, 100% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Fibonacci */
+.fibonacci-dp {
+  text-align: center;
+  color: white;
+}
+
+.memo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.memo-cell {
+  background: linear-gradient(45deg, #9b59b6, #8e44ad);
+  border-radius: 10px;
+  padding: 15px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.memo-cell.current {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.memo-n {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+.memo-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.result {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 300px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f1c40f;
+}
+
+/* Knapsack DP */
+.knapsack-dp {
+  text-align: center;
+  color: white;
+}
+
+.items-info {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+.item {
+  padding: 10px;
+  margin: 8px 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+/* LCS */
+.lcs-dp {
+  text-align: center;
+  color: white;
+}
+
+.lcs-dp table {
+  font-size: 14px;
+}
+
+.lcs-dp th:first-child,
+.lcs-dp td:first-child {
+  background: #34495e;
+  color: white;
+  font-weight: bold;
+}
+
+/* Matrix Chain */
+.matrix-chain {
+  text-align: center;
+  color: white;
+}
+
+.dimensions {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 300px;
+}
+
+.dimensions div {
+  padding: 8px;
+  margin: 5px 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+/* Coin Change DP */
+.coin-change-dp {
+  text-align: center;
+  color: white;
+}
+
+.coin-change-dp table {
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.coins-list {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 200px;
+  font-family: monospace;
+}
+
+/* Edit Distance */
+.edit-distance {
+  text-align: center;
+  color: white;
+}
+
+.edit-distance table {
+  font-size: 14px;
+}
+
+.edit-distance th:first-child,
+.edit-distance td:first-child {
+  background: #34495e;
+  color: white;
+  font-weight: bold;
+}
+
+/* Enhanced DP Table Styling */
+.dp-table-container {
+  position: relative;
+  overflow: auto;
+  max-height: 400px;
+}
+
+.dp-table-scroll {
+  overflow: auto;
+}
+
+.dp-row-highlight {
+  background: rgba(52, 152, 219, 0.1) !important;
+}
+
+.dp-col-highlight {
+  background: rgba(46, 204, 113, 0.1) !important;
+}
+
+.dp-diagonal-highlight {
+  background: rgba(155, 89, 182, 0.1) !important;
+}
+
+/* Animation for DP cell updates */
+@keyframes dp-update {
+  0% {
+    background: #e74c3c;
+    color: white;
+    transform: scale(1.2);
+  }
+  100% {
+    background: #ecf0f1;
+    color: #2c3e50;
+    transform: scale(1);
+  }
+}
+
+.dp-cell.updated {
+  animation: dp-update 1s ease;
+}
+
+/* Tooltip for DP values */
+.dp-cell:hover::after {
+  content: attr(data-value);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c3e50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dp-table {
+    font-size: 12px;
+  }
+  
+  .dp-table th,
+  .dp-table td {
+    padding: 8px;
+  }
+  
+  .memo-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+  }
+  
+  .memo-cell {
+    padding: 10px;
+  }
+  
+  .memo-n {
+    font-size: 12px;
+  }
+  
+  .memo-value {
+    font-size: 16px;
+  }
+}
+
+/* Special effects for DP visualization */
+.dp-cell.path {
+  background: #27ae60 !important;
+  color: white !important;
+}
+
+.dp-cell.optimal {
+  background: #f1c40f !important;
+  color: #2c3e50 !important;
+}
+
+.dp-cell.computation {
+  background: #3498db !important;
+  color: white !important;
+}
+
+/* Gradient backgrounds for different DP algorithms */
+.fibonacci-dp {
+  background: linear-gradient(135deg, #ff6b6b 0%, #c0392b 100%);
+}
+
+.knapsack-dp {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+}
+
+.lcs-dp {
+  background: linear-gradient(135deg, #45b7d1 0%, #96ceb4 100%);
+}
+
+.matrix-chain {
+  background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+}
+
+.coin-change-dp {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+}
+
+.edit-distance {
+  background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+}

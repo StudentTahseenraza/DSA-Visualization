@@ -1,0 +1,270 @@
+/* Add to styles/global.css */
+:root {
+  /* Light Theme Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #0a0b0d;
+  --text-muted: #7d8891;
+  --border-color: #dee2e6;
+  --card-bg: #186772;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --accent-color: #4A90E2;
+  --accent-hover: #357ABD;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --error-color: #dc3545;
+
+  /* New gradient colors */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-success: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  --gradient-warning: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+  --gradient-danger: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  
+  /* Glass morphism effects */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  
+  /* Animation durations */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Colors */
+  --bg-primary: #0f1419;
+  --bg-secondary: #1a202c;
+  --bg-tertiary: #2d3748;
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e0;
+  --text-muted: #a0aec0;
+  --border-color: #4a5568;
+  --card-bg: #07080b;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --accent-color: #63b3ed;
+  --accent-hover: #4299e1;
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --error-color: #f56565;
+}
+
+/* Apply themes to all components */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.app {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Theme for AlgorithmPage */
+.algorithm-page {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.controls-panel,
+.explanation-panel,
+.visualization-panel,
+.pseudocode-panel {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color);
+}
+
+.explanation-content,
+.pseudocode-panel .sorting-viewer {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary);
+}
+
+/* Theme for Homepage */
+.homepage {
+  background-color: var(--bg-primary);
+}
+
+.algorithm-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.homepage-header h1 {
+  color: var(--text-primary);
+}
+
+.homepage-header p {
+  color: var(--text-secondary);
+}
+
+.card-content h3 {
+  color: var(--text-primary);
+}
+
+.card-content p {
+  color: var(--text-secondary);
+}
+
+.algorithm-tag {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Navigation buttons */
+.nav-button {
+  padding: 10px 20px;
+  background: var(--accent-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.nav-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+  color: white;
+}
+
+.algorithm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.homepage-header .header-content {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.homepage-header .header-actions {
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Control elements */
+select, input, textarea {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+button:not(.theme-toggle) {
+  background: var(--accent-color) !important;
+  color: white !important;
+}
+
+button:hover:not(:disabled):not(.theme-toggle) {
+  background: var(--accent-hover) !important;
+}
+
+/* Common button styles for all pages */
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: all var(--transition-normal) ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Common card styles */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Navigation brand text */
+.nav-brand {
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Common animations */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

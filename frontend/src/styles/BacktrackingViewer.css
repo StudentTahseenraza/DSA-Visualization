@@ -1,0 +1,382 @@
+/* components/styles/BacktrackingViewer.css */
+.backtracking-viewer {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  overflow: auto;
+}
+
+/* N-Queens Board */
+.n-queens-board {
+  text-align: center;
+  color: white;
+}
+
+.chess-board {
+  display: inline-block;
+  border: 3px solid #2c3e50;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  margin: 20px auto;
+  background: #34495e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chess-row {
+  display: flex;
+}
+
+.chess-cell {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.chess-cell.light {
+  background: #f0d9b5;
+}
+
+.chess-cell.dark {
+  background: #b58863;
+}
+
+.chess-cell.current {
+  box-shadow: 0 0 0 3px #e74c3c;
+  z-index: 10;
+}
+
+.queen {
+  font-size: 30px;
+  color: #2c3e50;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Sudoku Grid */
+.sudoku-grid {
+  text-align: center;
+  color: white;
+}
+
+.sudoku-board {
+  display: inline-grid;
+  grid-template-columns: repeat(9, 40px);
+  grid-template-rows: repeat(9, 40px);
+  gap: 1px;
+  background: #2c3e50;
+  border: 3px solid #2c3e50;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 20px auto;
+}
+
+.sudoku-row {
+  display: contents;
+}
+
+.sudoku-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  font-weight: bold;
+  font-size: 16px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.sudoku-cell.empty {
+  background: #ecf0f1;
+}
+
+.sudoku-cell.current {
+  background: #3498db;
+  color: white;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.trying-number {
+  position: absolute;
+  font-size: 12px;
+  color: #e74c3c;
+  bottom: 2px;
+  right: 2px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Maze Viewer */
+.maze-viewer {
+  text-align: center;
+  color: white;
+}
+
+.maze-grid {
+  display: inline-grid;
+  gap: 2px;
+  background: #2c3e50;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 20px auto;
+}
+
+.maze-row {
+  display: flex;
+}
+
+.maze-cell {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.maze-cell.path {
+  background: #27ae60;
+}
+
+.maze-cell.wall {
+  background: #7f8c8d;
+}
+
+.maze-cell.solution {
+  background: #f39c12;
+  animation: glow 2s infinite;
+}
+
+.maze-cell.current {
+  background: #e74c3c;
+  transform: scale(1.2);
+  z-index: 10;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px #f39c12; }
+  50% { box-shadow: 0 0 20px #f39c12; }
+}
+
+/* Knight's Tour */
+.knights-tour {
+  text-align: center;
+  color: white;
+}
+
+.move-number {
+  font-size: 12px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.knight {
+  font-size: 20px;
+  position: absolute;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Word Search */
+.word-search {
+  text-align: center;
+  color: white;
+}
+
+.word-grid {
+  display: inline-grid;
+  gap: 2px;
+  background: #2c3e50;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 20px auto;
+}
+
+.word-row {
+  display: flex;
+}
+
+.word-cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ecf0f1;
+  color: #2c3e50;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.word-cell.visited {
+  background: #3498db;
+  color: white;
+  transform: rotateY(360deg);
+}
+
+.word-cell.current {
+  background: #e74c3c;
+  color: white;
+  transform: scale(1.2);
+  z-index: 10;
+}
+
+/* Graph Coloring */
+.graph-coloring {
+  text-align: center;
+  color: white;
+}
+
+.graph-nodes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.graph-node {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.graph-node.current {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+  animation: pulse 2s infinite;
+}
+
+.color-palette {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.color-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Hamiltonian Cycle */
+.hamiltonian-cycle {
+  text-align: center;
+  color: white;
+}
+
+.cycle-graph {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.cycle-node {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #3498db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.cycle-node.in-path {
+  background: #27ae60;
+  animation: glow 2s infinite;
+}
+
+.cycle-node.current {
+  background: #e74c3c;
+  transform: scale(1.3);
+}
+
+.path-display {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chess-cell {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .sudoku-board {
+    grid-template-columns: repeat(9, 30px);
+    grid-template-rows: repeat(9, 30px);
+  }
+  
+  .maze-cell {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .word-cell {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .graph-node {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+
+
+/* In your CSS file */
+/* .maze-cell.visited {
+  background-color: #ffeaa7 !important;
+}
+
+.maze-cell.solution {
+  background-color: #74b9ff !important;
+}
+
+.maze-cell.current {
+  background-color: #ff7675 !important;
+} */

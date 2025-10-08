@@ -1,8 +1,60 @@
 .line-chart {
-  background: rgba(28, 28, 43, 0.5);
+  background: rgba(28, 28, 43, 0.8);
   border-radius: 12px;
-  padding: 15px;
+  padding: 20px;
   box-shadow: 0 0 20px rgba(107, 91, 149, 0.3);
   backdrop-filter: blur(5px);
   margin-top: 20px;
+  border: 2px solid #4a5568;
+  height: 250px;
+  position: relative;
+}
+
+/* Chart.js canvas styling */
+.line-chart canvas {
+  border-radius: 8px;
+}
+
+/* Custom chart styling to match your theme */
+.chartjs-render-monitor {
+  filter: drop-shadow(0 0 10px rgba(107, 91, 149, 0.2));
+}
+
+/* Ensure the chart container has proper dimensions */
+.line-chart > div {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Custom tooltip styling */
+.chartjs-tooltip {
+  background: rgba(45, 55, 72, 0.95) !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 6px !important;
+  color: #e2e8f0 !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Chart legend styling */
+.chartjs-legend {
+  color: #e2e8f0 !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Axis label styling */
+.chartjs-scale-label {
+  color: #cbd5e0 !important;
+  font-weight: 500;
+}
+
+/* Grid line styling */
+.chartjs-grid-line {
+  stroke: rgba(74, 85, 104, 0.3) !important;
+}
+
+/* Point styling */
+.chartjs-point {
+  stroke: #4A90E2 !important;
+  stroke-width: 2px !important;
 }

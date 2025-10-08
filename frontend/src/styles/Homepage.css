@@ -1,0 +1,138 @@
+/* frontend/src/styles/Homepage.css */
+.homepage {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.homepage-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.homepage-header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #4A90E2 0%, #6B5B95 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.homepage-header p {
+  font-size: 1.2rem;
+  color: #E5E5E5;
+  opacity: 0.8;
+}
+
+.algorithm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.algorithm-card {
+  background: rgba(28, 28, 43, 0.8);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.algorithm-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-color), transparent);
+}
+
+.algorithm-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: var(--card-color);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #E5E5E5;
+}
+
+.card-content p {
+  color: #E5E5E5;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.algorithm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.algorithm-tag {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #E5E5E5;
+}
+
+.card-explore {
+  margin-top: auto;
+  text-align: right;
+  color: var(--card-color);
+  font-weight: 600;
+}
+
+.card-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  margin-bottom: 15px;
+}
+
+.algorithm-card {
+  /* Your existing card styles */
+  display: flex;
+  flex-direction: column;
+  /* Other styles */
+}
+
+.card-content {
+  /* Ensure proper spacing */
+  flex-grow: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .homepage {
+    padding: 1rem;
+  }
+  
+  .algorithm-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .homepage-header h1 {
+    font-size: 2rem;
+  }
+}
