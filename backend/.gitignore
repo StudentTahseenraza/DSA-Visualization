@@ -1,60 +1,92 @@
-# Node modules
+# ===============================
+# Node.js
+# ===============================
 node_modules/
-
-# Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.npm
 
+# ===============================
 # Environment variables
+# ===============================
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
-# Build and cache
+# ===============================
+# Logs
+# ===============================
+logs
+*.log
+
+# ===============================
+# Build output
+# ===============================
 dist/
 build/
 .cache/
 .tmp/
 
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# IDE / Editor files
-.vscode/
-.idea/
-*.swp
-
-# Coverage reports
+# ===============================
+# Coverage & testing
+# ===============================
 coverage/
 .nyc_output/
 
-# Runtime data
+# ===============================
+# OS-specific files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# IDE / Editor files
+# ===============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===============================
+# Runtime files
+# ===============================
 pids
 *.pid
 *.seed
 *.pid.lock
 
-# Dependency directories
+# ===============================
+# Dependency managers
+# ===============================
 jspm_packages/
 
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
+# ===============================
+# ESLint / TypeScript
+# ===============================
 .eslintcache
-
-# TypeScript build files
 *.tsbuildinfo
 
+# ===============================
 # Docker
+# ===============================
 docker-compose.override.yml
 
-# Temporary uploads or data
+# ===============================
+# Uploads / temp data
+# ===============================
 uploads/
 tmp/
+
+# ===============================
+# Render / Deployment
+# ===============================
+.render/
+.vercel/
+.netlify/
+
+# ===============================
+# Node version managers
+# ===============================
+.nvmrc
