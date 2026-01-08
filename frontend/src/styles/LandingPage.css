@@ -594,3 +594,30 @@ html, body {
     min-height: calc(100vh - 80px);
   }
 }
+
+/* Ensure nav-links can accommodate auth buttons */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Make sure auth buttons align properly */
+.nav-links li {
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile responsive updates */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 15px;
+  }
+  
+  .auth-buttons {
+    gap: 8px;
+  }
+}

@@ -15,7 +15,6 @@ const AboutPage = () => {
       bio: "Passionate about creating educational tools that make complex concepts accessible to everyone.",
       avatar: "/images/team/developer1.jpg"
     },
-    // Add more team members as needed
   ];
 
   const projectMilestones = [
@@ -30,11 +29,11 @@ const AboutPage = () => {
       <header className="about-header">
         <nav className="about-nav">
           <Link to="/" className="nav-brand">
-            <span className="brand-text">VISUALIZE</span>
+            <span className="brand-text">DSA VISUALIZER</span>
           </Link>
           <div className="nav-actions">
             <Link to="/home" className="nav-button">
-              Home
+              ← Back to Home
             </Link>
             <ThemeToggle />
           </div>
@@ -82,7 +81,7 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Features Highlight */}
+        {/* Features Highlight - FIXED SECTION */}
         <section className="features-highlight">
           <h2>Why Choose DSA Visualizer?</h2>
           <div className="features-grid">

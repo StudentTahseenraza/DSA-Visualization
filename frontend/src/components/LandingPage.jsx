@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
+import AuthButtons from "./AuthButtons";
 import "../styles/LandingPage.css";
 
 const LandingPage = () => {
@@ -115,11 +116,11 @@ const LandingPage = () => {
         }`}
       ></div>
 
-      {/* Header */}
+      {/* Updated Header with Authentication */}
       <header className="landing-header">
         <nav className="landing-nav">
           <div className="nav-brand">
-            <span className="brand-text">VISUALIZE</span>
+            <span className="brand-text"> DSA Visualization</span>
           </div>
           <ul className="nav-links">
             <li>
@@ -149,6 +150,10 @@ const LandingPage = () => {
               <Link to="/contact" className="nav-link">
                 Contact
               </Link>
+            </li>
+            {/* Add Authentication Buttons */}
+            <li>
+              <AuthButtons />
             </li>
           </ul>
         </nav>

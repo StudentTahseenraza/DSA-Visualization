@@ -1,12 +1,14 @@
 // components/AlgorithmCompare.jsx
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 import AnimationArea from "./AnimationArea";
 import BSTViewer from "./BSTViewer";
 import GraphViewer from "./GraphViewer";
 import CodeViewer from "./SortingViewer";
 import ControlButtons from "./ControlButtons";
-import SearchViewer from "./SearchViewer"; // We'll create this
+import SearchViewer from "./SearchViewer";
 import "../styles/AlgorithmCompare.css";
 
 const AlgorithmCompare = () => {
@@ -14,7 +16,7 @@ const AlgorithmCompare = () => {
   const [algorithm1, setAlgorithm1] = useState("");
   const [algorithm2, setAlgorithm2] = useState("");
   const [inputData, setInputData] = useState("[5,2,8,1,3]");
-  const [targetValue, setTargetValue] = useState("5"); // New state for search target
+  const [targetValue, setTargetValue] = useState("5");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [speed, setSpeed] = useState(500);
@@ -51,7 +53,9 @@ const AlgorithmCompare = () => {
     graphs: ["breadth-first-search", "depth-first-search", "dijkstra"],
   };
 
-  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+    const BASE_URL = "http://localhost:5000/api";
+
 
   // Get the appropriate visualization component based on domain
   const getVisualizationComponent = (algorithm, data, stepIndex) => {
@@ -278,16 +282,6 @@ const AlgorithmCompare = () => {
     }
   };
 
-  const getEndpoint = (domain, algorithm) => {
-    const endpoints = {
-      sorting: `sort/${algorithm}`,
-      searching: `search/${algorithm}`,
-      trees: `bst/insert`,
-      graphs: `graph/${algorithm}`,
-    };
-    return endpoints[domain];
-  };
-
   const getDefaultGraph = () => ({
     A: { B: 4, C: 2 },
     B: { A: 4, C: 1, D: 5 },
@@ -455,6 +449,19 @@ const AlgorithmCompare = () => {
 
   return (
     <div className="algorithm-compare">
+      {/* ADDED HEADER */}
+      <div className="algorithm-header">
+        <div className="header-left">
+          <h2>Algorithm Comparison</h2>
+        </div>
+        <div className="header-right">
+          <Link to="/home" className="nav-button">
+            ← Back to Home
+          </Link>
+          <ThemeToggle />
+        </div>
+      </div>
+
       <div className="compare-controls">
         <h3>Algorithm Comparison - {domain.toUpperCase()}</h3>
         <div className="control-group">

@@ -420,3 +420,152 @@
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
+
+/* Add these styles to your AlgorithmPage.css */
+
+/* Header Styles */
+.algorithm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #4a5568;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-left h2 {
+  color: #e2e8f0;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sidebar-toggle {
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background: #3182ce;
+  transform: translateY(-2px);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Navigation Button */
+.nav-button {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+/* Theme Toggle Customization */
+.header-right .theme-toggle {
+  margin: 0;
+}
+
+/* Responsive Design for Header */
+@media (max-width: 768px) {
+  .algorithm-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .header-left {
+    justify-content: center;
+  }
+  
+  .header-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .header-left h2 {
+    font-size: 1.5rem;
+  }
+  
+  .nav-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-right {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nav-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Update existing algorithm page styles for better spacing */
+.algorithm-page {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Ensure proper spacing in the main layout */
+.algorithm-layout {
+  display: flex;
+  gap: 20px;
+  min-height: calc(100vh - 160px); /* Adjusted for header */
+}
+
+/* If ThemeToggle needs specific header styling */
+.theme-toggle-header {
+  background: #2d3748;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-header:hover {
+  background: #4a5568;
+  transform: translateY(-2px);
+}

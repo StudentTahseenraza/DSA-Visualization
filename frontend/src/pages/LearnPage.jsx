@@ -16,7 +16,7 @@ const LearnPage = () => {
         description: "Learn basic array operations and manipulations",
         duration: "30 min",
         level: "Beginner",
-        link: "/array-operations"
+        link: "/arrays"
       },
       {
         title: "Basic Sorting Algorithms",
@@ -24,13 +24,6 @@ const LearnPage = () => {
         duration: "45 min",
         level: "Beginner",
         link: "/sorting"
-      },
-      {
-        title: "Linked Lists Fundamentals",
-        description: "Learn about singly and doubly linked lists",
-        duration: "40 min",
-        level: "Beginner",
-        link: "/linked-list"
       }
     ],
     intermediate: [
@@ -47,13 +40,6 @@ const LearnPage = () => {
         duration: "75 min",
         level: "Intermediate",
         link: "/graphs"
-      },
-      {
-        title: "Advanced Sorting",
-        description: "Merge Sort, Quick Sort, and Heap Sort",
-        duration: "55 min",
-        level: "Intermediate",
-        link: "/sorting"
       }
     ],
     advanced: [
@@ -70,17 +56,11 @@ const LearnPage = () => {
         duration: "80 min",
         level: "Advanced",
         link: "/backtracking"
-      },
-      {
-        title: "Complexity Analysis",
-        description: "Big O notation, space and time complexity",
-        duration: "50 min",
-        level: "Advanced",
-        link: "/complexity-analysis"
       }
     ]
   };
 
+  // FIXED: Additional Learning Resources Section
   const resources = [
     {
       type: "📖",
@@ -113,11 +93,11 @@ const LearnPage = () => {
       <header className="learn-header">
         <nav className="learn-nav">
           <Link to="/" className="nav-brand">
-            <span className="brand-text">VISUALIZE</span>
+            <span className="brand-text">DSA VISUALIZER</span>
           </Link>
           <div className="nav-actions">
             <Link to="/home" className="nav-button">
-              Home
+              ← Back to Home
             </Link>
             <ThemeToggle />
           </div>
@@ -160,7 +140,7 @@ const LearnPage = () => {
           <div className="path-content">
             <div className="lessons-grid">
               {learningPaths[activeCategory].map((lesson, index) => (
-                <div key={index} className="lesson-card">
+                <div key={index} className="lesson-card" data-level={lesson.level}>
                   <div className="lesson-header">
                     <h3>{lesson.title}</h3>
                     <span className="lesson-duration">{lesson.duration}</span>
@@ -178,7 +158,7 @@ const LearnPage = () => {
           </div>
         </section>
 
-        {/* Additional Resources */}
+        {/* FIXED: Additional Learning Resources Section */}
         <section className="additional-resources">
           <h2>Additional Learning Resources</h2>
           <div className="resources-grid">
@@ -214,34 +194,6 @@ const LearnPage = () => {
             <div className="tip-card">
               <h3>💡 Solve Problems</h3>
               <p>Apply what you learn by solving real programming problems.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Progress Tracking */}
-        <section className="progress-section">
-          <h2>Track Your Learning Progress</h2>
-          <div className="progress-cards">
-            <div className="progress-card">
-              <h3>Algorithms Completed</h3>
-              <div className="progress-number">0/50</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: '0%' }}></div>
-              </div>
-            </div>
-            <div className="progress-card">
-              <h3>Categories Explored</h3>
-              <div className="progress-number">0/10</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: '0%' }}></div>
-              </div>
-            </div>
-            <div className="progress-card">
-              <h3>Learning Streak</h3>
-              <div className="progress-number">0 days</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: '0%' }}></div>
-              </div>
             </div>
           </div>
         </section>

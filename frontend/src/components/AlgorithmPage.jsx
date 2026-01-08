@@ -5,7 +5,7 @@ import axios from "axios";
 import AnimationArea from "./AnimationArea";
 import ControlButtons from "./ControlButtons";
 import SortingViewer from "./SortingViewer";
-import ExplanationBox from "./ExplanationBox";
+// import ExplanationBox from "./ExplanationBox";
 import LineChart from "./LineChart";
 import CustomArrayInput from "./CustomArrayInput";
 import BSTViewer from "./BSTViewer";
@@ -179,8 +179,8 @@ const AlgorithmPage = () => {
   const { isDarkMode } = useTheme();
 
 
-  // const BASE_URL = "http://localhost:5000/api";
-  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
 
 
   // Set default algorithm based on category
@@ -2243,15 +2243,17 @@ const handleCreateGraphFromMatrix = (matrixString) => {
       <ComplexityAnalysis />
     ) : (
       <div className="algorithm-page">
+        {/* Improved Header Section */}
         <div className="algorithm-header">
           <div className="header-left">
-            <button 
+            {/* <button 
               onClick={toggleSidebar}
               className="sidebar-toggle"
+              aria-label="Toggle sidebar"
             >
               {isSidebarOpen ? '✕' : '☰'}
-            </button>
-            <h2>{selectedAlgorithm.replace(/-/g, ' ')} Visualization</h2>
+            </button> */}
+            <h2>{selectedAlgorithm.replace(/-/g, ' ').toUpperCase()} Visualization</h2>
           </div>
           <div className="header-right">
             <Link to="/home" className="nav-button">
@@ -2262,13 +2264,13 @@ const handleCreateGraphFromMatrix = (matrixString) => {
         </div>
 
         <div className="algorithm-layout">
-          <Sidebar
+          {/* <Sidebar
             category={category}
             selectedAlgorithm={selectedAlgorithm}
             onSelectAlgorithm={handleSelectAlgorithm}
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
-          />
+          /> */}
 
           <div className="visualization-area">
             {/* TOP ROW: Controls and Explanation Side by Side */}

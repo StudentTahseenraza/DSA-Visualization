@@ -250,3 +250,26 @@
   border-radius: 6px;
   font-weight: bold;
 }
+
+/* Add to AlgorithmCompare.css */
+.algorithm-compare .algorithm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.algorithm-compare .header-left h2 {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.algorithm-compare .header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}

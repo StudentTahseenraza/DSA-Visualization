@@ -22,3 +22,46 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dependency directories (alternative package managers)
+.pnp/
+.pnp.js
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# dotenv environment variable files
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Vim
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db

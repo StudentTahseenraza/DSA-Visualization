@@ -1,7 +1,9 @@
-// components/ComplexityAnalysis.jsx - Fix the API endpoint
+// components/ComplexityAnalysis.jsx
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { Link } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 import '../styles/ComplexityAnalysis.css';
 
 const ComplexityAnalysis = () => {
@@ -12,6 +14,7 @@ const ComplexityAnalysis = () => {
   const [complexityGraphs, setComplexityGraphs] = useState(null);
   const [availableAlgorithms, setAvailableAlgorithms] = useState([]);
 
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
   const BASE_URL = "http://localhost:5000/api";
 
   // Fetch available algorithms on component mount
@@ -56,7 +59,6 @@ const ComplexityAnalysis = () => {
     setComplexityGraphs(null);
 
     try {
-      // CORRECTED ENDPOINT: /api/complexity/analyze
       const response = await axios.post(`${BASE_URL}/complexity/analyze`, {
         algorithmId: selectedAlgorithm,
         inputSizes: inputSizes
@@ -84,177 +86,192 @@ const ComplexityAnalysis = () => {
 
   return (
     <div className="complexity-analysis">
-      <div className="complexity-header">
-        <h1>Algorithm Complexity Analysis</h1>
-        <p>Measure real-time performance and analyze time complexity</p>
+      {/* ADDED HEADER */}
+      <div className="algorithm-header">
+        <div className="header-left">
+          <h2>Complexity Analysis</h2>
+        </div>
+        <div className="header-right">
+          <Link to="/home" className="nav-button">
+            ← Back to Home
+          </Link>
+          <ThemeToggle />
+        </div>
       </div>
 
-      <div className="analysis-controls">
-        <div className="control-section">
-          <h3>1. Select Algorithm</h3>
-          <div className="algorithm-sidebar">
-            {availableAlgorithms.map(algo => (
-              <motion.div
-                key={algo.id}
-                className={`algorithm-item ${selectedAlgorithm === algo.id ? 'selected' : ''}`}
-                onClick={() => setSelectedAlgorithm(algo.id)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="algo-name">{algo.name}</span>
-                <span className="algo-category">{algo.category}</span>
-              </motion.div>
-            ))}
+      <div className="complexity-content">
+        <div className="complexity-header">
+          <h1>Algorithm Complexity Analysis</h1>
+          <p>Measure real-time performance and analyze time complexity</p>
+        </div>
+
+        <div className="analysis-controls">
+          <div className="control-section">
+            <h3>1. Select Algorithm</h3>
+            <div className="algorithm-sidebar">
+              {availableAlgorithms.map(algo => (
+                <motion.div
+                  key={algo.id}
+                  className={`algorithm-item ${selectedAlgorithm === algo.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedAlgorithm(algo.id)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="algo-name">{algo.name}</span>
+                  <span className="algo-category">{algo.category}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="control-section">
+            <h3>2. Set Input Sizes</h3>
+            <div className="input-sizes-control">
+              <input
+                type="text"
+                value={inputSizes.join(', ')}
+                onChange={handleInputSizesChange}
+                placeholder="Enter sizes separated by commas (e.g., 10, 50, 100, 500)"
+              />
+              <strong>
+                <small style={{ opacity: 1,color: 'black' }}>Larger sizes may take longer to compute</small>
+              </strong>
+            </div>
+          </div>
+
+          <div className="control-section">
+            <h3>3. Run Analysis</h3>
+            <button 
+              className="analyze-btn"
+              onClick={runComplexityAnalysis}
+              disabled={isAnalyzing || !selectedAlgorithm}
+            >
+              {isAnalyzing ? (
+                <>
+                  <div className="spinner"></div>
+                  Analyzing...
+                </>
+              ) : (
+                'Run Complexity Analysis'
+              )}
+            </button>
           </div>
         </div>
 
-        <div className="control-section">
-          <h3>2. Set Input Sizes</h3>
-          <div className="input-sizes-control">
-            <input
-              type="text"
-              value={inputSizes.join(', ')}
-              onChange={handleInputSizesChange}
-              placeholder="Enter sizes separated by commas (e.g., 10, 50, 100, 500)"
-            />
-            <strong>
-              <small style={{ opacity: 1,color: 'black' }}>Larger sizes may take longer to compute</small>
-            </strong>
-          </div>
-        </div>
-
-        <div className="control-section">
-          <h3>3. Run Analysis</h3>
-          <button 
-            className="analyze-btn"
-            onClick={runComplexityAnalysis}
-            disabled={isAnalyzing || !selectedAlgorithm}
+        {analysisResults && (
+          <motion.div 
+            className="analysis-results"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            {isAnalyzing ? (
-              <>
-                <div className="spinner"></div>
-                Analyzing...
-              </>
-            ) : (
-              'Run Complexity Analysis'
-            )}
-          </button>
-        </div>
-      </div>
-
-      {analysisResults && (
-        <motion.div 
-          className="analysis-results"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="results-header">
-            <h2>Complexity Analysis Results</h2>
-            <div className="complexity-badge">
-              <span className="actual-complexity">
-                Actual: {analysisResults.complexityAnalysis.complexity}
-              </span>
-              <span className="theoretical-complexity">
-                Theoretical: {analysisResults.complexityAnalysis.theoreticalComplexity}
-              </span>
+            <div className="results-header">
+              <h2>Complexity Analysis Results</h2>
+              <div className="complexity-badge">
+                <span className="actual-complexity">
+                  Actual: {analysisResults.complexityAnalysis.complexity}
+                </span>
+                <span className="theoretical-complexity">
+                  Theoretical: {analysisResults.complexityAnalysis.theoreticalComplexity}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="results-grid">
-            <div className="performance-data">
-              <h3>Performance Measurements</h3>
-              <div className="data-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Input Size</th>
-                      <th>Time (ms)</th>
-                      <th>Memory</th>
-                      <th>Growth Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analysisResults.results.map((result, index) => (
-                      <tr key={index}>
-                        <td>{result.inputSize}</td>
-                        <td>{result.executionTime.toFixed(2)}</td>
-                        <td>{(result.memoryUsage / 1024).toFixed(2)} KB</td>
-                        <td>
-                          {index > 0 ? 
-                            (result.executionTime / analysisResults.results[index-1].executionTime).toFixed(2) + 'x' 
-                            : '-'
-                          }
-                        </td>
+            <div className="results-grid">
+              <div className="performance-data">
+                <h3>Performance Measurements</h3>
+                <div className="data-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Input Size</th>
+                        <th>Time (ms)</th>
+                        <th>Memory</th>
+                        <th>Growth Rate</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="complexity-explanation">
-              <h3>Complexity Analysis</h3>
-              <div className="explanation-content">
-                <p><strong>Detected Complexity:</strong> {analysisResults.complexityAnalysis.complexity}</p>
-                <p><strong>Theoretical Complexity:</strong> {analysisResults.complexityAnalysis.theoreticalComplexity}</p>
-                <p><strong>Explanation:</strong> {analysisResults.complexityAnalysis.explanation}</p>
-                <p><strong>Average Growth Rate:</strong> {analysisResults.complexityAnalysis.averageGrowth.toFixed(2)}</p>
-              </div>
-            </div>
-          </div>
-
-          {complexityGraphs && (
-            <div className="complexity-graphs">
-              <h3>Time Complexity Graphs</h3>
-              <div className="graphs-container">
-                <div className="graph-section">
-                  <h4>Actual vs Theoretical Performance</h4>
-                  <div className="graph-comparison">
-                    <ComplexityGraph 
-                      data={complexityGraphs}
-                      title="Runtime Analysis"
-                      showActual={true}
-                      showTheoretical={true}
-                    />
-                  </div>
+                    </thead>
+                    <tbody>
+                      {analysisResults.results.map((result, index) => (
+                        <tr key={index}>
+                          <td>{result.inputSize}</td>
+                          <td>{result.executionTime.toFixed(2)}</td>
+                          <td>{(result.memoryUsage / 1024).toFixed(2)} KB</td>
+                          <td>
+                            {index > 0 ? 
+                              (result.executionTime / analysisResults.results[index-1].executionTime).toFixed(2) + 'x' 
+                              : '-'
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
 
-                <div className="notation-graphs">
-                  <div className="notation-graph">
-                    <h5>Big O Notation (Upper Bound)</h5>
-                    <ComplexityGraph 
-                      data={complexityGraphs}
-                      title="Big O - Worst Case"
-                      curveType="bigO"
-                      color="#ff6b6b"
-                    />
-                  </div>
-                  
-                  <div className="notation-graph">
-                    <h5>Big Ω Notation (Lower Bound)</h5>
-                    <ComplexityGraph 
-                      data={complexityGraphs}
-                      title="Big Ω - Best Case"
-                      curveType="bigOmega"
-                      color="#4ecdc4"
-                    />
-                  </div>
-                  
-                  <div className="notation-graph">
-                    <h5>Big Θ Notation (Tight Bound)</h5>
-                    <ComplexityGraph 
-                      data={complexityGraphs}
-                      title="Big Θ - Average Case"
-                      curveType="bigTheta"
-                      color="#45b7d1"
-                    />
-                  </div>
+              <div className="complexity-explanation">
+                <h3>Complexity Analysis</h3>
+                <div className="explanation-content">
+                  <p><strong>Detected Complexity:</strong> {analysisResults.complexityAnalysis.complexity}</p>
+                  <p><strong>Theoretical Complexity:</strong> {analysisResults.complexityAnalysis.theoreticalComplexity}</p>
+                  <p><strong>Explanation:</strong> {analysisResults.complexityAnalysis.explanation}</p>
+                  <p><strong>Average Growth Rate:</strong> {analysisResults.complexityAnalysis.averageGrowth.toFixed(2)}</p>
                 </div>
               </div>
             </div>
-          )}
-        </motion.div>
-      )}
+
+            {complexityGraphs && (
+              <div className="complexity-graphs">
+                <h3>Time Complexity Graphs</h3>
+                <div className="graphs-container">
+                  <div className="graph-section">
+                    <h4>Actual vs Theoretical Performance</h4>
+                    <div className="graph-comparison">
+                      <ComplexityGraph 
+                        data={complexityGraphs}
+                        title="Runtime Analysis"
+                        showActual={true}
+                        showTheoretical={true}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="notation-graphs">
+                    <div className="notation-graph">
+                      <h5>Big O Notation (Upper Bound)</h5>
+                      <ComplexityGraph 
+                        data={complexityGraphs}
+                        title="Big O - Worst Case"
+                        curveType="bigO"
+                        color="#ff6b6b"
+                      />
+                    </div>
+                    
+                    <div className="notation-graph">
+                      <h5>Big Ω Notation (Lower Bound)</h5>
+                      <ComplexityGraph 
+                        data={complexityGraphs}
+                        title="Big Ω - Best Case"
+                        curveType="bigOmega"
+                        color="#4ecdc4"
+                      />
+                    </div>
+                    
+                    <div className="notation-graph">
+                      <h5>Big Θ Notation (Tight Bound)</h5>
+                      <ComplexityGraph 
+                        data={complexityGraphs}
+                        title="Big Θ - Average Case"
+                        curveType="bigTheta"
+                        color="#45b7d1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };

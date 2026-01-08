@@ -241,7 +241,7 @@
 }
 
 .data-table tr:hover {
-  background: #e3f2fd;
+  background: #030a0f;
 }
 
 .explanation-content {
@@ -258,7 +258,7 @@
 
 /* Graphs */
 .complexity-graphs h3 {
-  color: #e0e7ef;
+  color: #092341;
   margin-bottom: 20px;
 }
 
@@ -379,4 +379,31 @@
     flex-direction: column;
     gap: 10px;
   }
+}
+
+/* Add to ComplexityAnalysis.css */
+.complexity-analysis .algorithm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.complexity-analysis .header-left h2 {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.complexity-analysis .header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.complexity-content {
+  padding: 0 20px;
 }

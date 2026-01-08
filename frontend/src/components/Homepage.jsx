@@ -326,7 +326,7 @@ const Homepage = () => {
     <div className="homepage">
       <div className="homepage-header">
       <div className="header-content">
-        <h1>DSA Visualizer</h1>
+        <h1>DSA Visualization</h1>
         <p>Interactive visualizations for data structures and algorithms</p>
         <div className="header-actions">
           <Link to="/" className="nav-button">

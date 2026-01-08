@@ -1,0 +1,181 @@
+/* styles/AuthButtons.css */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signed-out-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.sign-in-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.sign-in-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.sign-up-btn {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+}
+
+.sign-up-btn:hover {
+  background: white;
+  transform: translateY(-1px);
+}
+
+/* Dark mode support */
+.dark .sign-in-btn {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.dark .sign-up-btn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+}
+
+/* User avatar styling */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .signed-out-buttons {
+    gap: 8px;
+  }
+  
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}.auth-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.login-btn,
+.signup-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.login-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.signup-btn {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.signup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* User Profile */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fc8181;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.logout-btn:hover {
+  color: #f56565;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-buttons {
+    gap: 0.5rem;
+  }
+  
+  .login-btn,
+  .signup-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .user-profile {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .user-info {
+    align-items: center;
+  }
+}
