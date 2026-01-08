@@ -53,8 +53,8 @@ const AlgorithmCompare = () => {
     graphs: ["breadth-first-search", "depth-first-search", "dijkstra"],
   };
 
-  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
-    const BASE_URL = "http://localhost:5000/api";
+  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+    // const BASE_URL = "http://localhost:5000/api";
 
 
   // Get the appropriate visualization component based on domain

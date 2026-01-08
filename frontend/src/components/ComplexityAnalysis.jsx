@@ -14,8 +14,8 @@ const ComplexityAnalysis = () => {
   const [complexityGraphs, setComplexityGraphs] = useState(null);
   const [availableAlgorithms, setAvailableAlgorithms] = useState([]);
 
-  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
-  const BASE_URL = "http://localhost:5000/api";
+  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+  // const BASE_URL = "http://localhost:5000/api";
 
   // Fetch available algorithms on component mount
   useEffect(() => {
