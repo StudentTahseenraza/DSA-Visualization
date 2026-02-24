@@ -65,6 +65,16 @@ exports.handleBSTOperation = (req, res) => {
       }
 
       result = bstOperations(bstOperation, bstValue, treeState, bstOptions);
+      
+      // For delete operations, ensure we're returning the updated tree
+      if (operation === "delete" && result && result.steps) {
+        // Make sure the last step has the final tree state
+        const lastStep = result.steps[result.steps.length - 1];
+        if (lastStep && !lastStep.tree) {
+          // If the last step doesn't have a tree, use the result.tree
+          lastStep.tree = result.tree;
+        }
+      }
     }
 
     res.json(result);

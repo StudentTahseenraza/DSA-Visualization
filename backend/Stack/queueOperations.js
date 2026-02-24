@@ -1,25 +1,39 @@
 // backend/queueOperations.js
 class Queue {
-  constructor() {
-    this.items = [];
+  constructor(initialItems = []) {
+    this.items = [...initialItems];
     this.steps = [];
   }
 
   enqueue(value) {
     this.steps = [];
+    
+    // Step 1: Show current queue before enqueue
     this.steps.push({
       queue: [...this.items],
-      action: 'start',
-      message: `Enqueuing ${value} to the queue`
+      action: "start",
+      message: `Preparing to enqueue ${value} to the queue`,
+      highlightIndex: -1,
     });
 
+    // Step 2: Show the value being enqueued
+    this.steps.push({
+      queue: [...this.items],
+      action: "enqueue-start",
+      value: value,
+      message: `Enqueuing ${value} to the queue...`,
+      highlightIndex: -1,
+    });
+
+    // Step 3: Add to queue
     this.items.push(value);
     
     this.steps.push({
       queue: [...this.items],
-      action: 'enqueue',
+      action: "enqueue",
       value,
-      message: `Enqueued ${value}. Queue size: ${this.items.length}`
+      message: `${value} has been enqueued. Queue size: ${this.items.length}`,
+      highlightIndex: this.items.length - 1,
     });
 
     return this.steps;
@@ -27,28 +41,44 @@ class Queue {
 
   dequeue() {
     this.steps = [];
+    
+    // Step 1: Show current queue before dequeue
     this.steps.push({
       queue: [...this.items],
-      action: 'start',
-      message: 'Dequeuing from the queue'
+      action: "start",
+      message: "Preparing to dequeue from the queue",
+      highlightIndex: 0,
     });
 
     if (this.isEmpty()) {
       this.steps.push({
         queue: [...this.items],
-        action: 'error',
-        message: 'Queue underflow: Cannot dequeue from empty queue'
+        action: "error",
+        message: "Queue underflow: Cannot dequeue from empty queue",
+        highlightIndex: -1,
       });
       return this.steps;
     }
 
-    const value = this.items.shift();
+    // Step 2: Highlight the element being dequeued
+    const value = this.items[0];
+    this.steps.push({
+      queue: [...this.items],
+      action: "dequeue-start",
+      value,
+      message: `Dequeuing ${value} from the front of the queue...`,
+      highlightIndex: 0,
+    });
+
+    // Step 3: Remove from queue
+    this.items.shift();
     
     this.steps.push({
       queue: [...this.items],
-      action: 'dequeue',
+      action: "dequeue",
       value,
-      message: `Dequeued ${value}. Queue size: ${this.items.length}`
+      message: `${value} has been dequeued. Queue size: ${this.items.length}`,
+      highlightIndex: -1,
     });
 
     return this.steps;
@@ -58,15 +88,17 @@ class Queue {
     this.steps = [];
     this.steps.push({
       queue: [...this.items],
-      action: 'start',
-      message: 'Checking front of the queue'
+      action: "start",
+      message: "Checking front of the queue",
+      highlightIndex: 0,
     });
 
     if (this.isEmpty()) {
       this.steps.push({
         queue: [...this.items],
-        action: 'error',
-        message: 'Queue is empty'
+        action: "error",
+        message: "Queue is empty",
+        highlightIndex: -1,
       });
       return this.steps;
     }
@@ -75,9 +107,10 @@ class Queue {
     
     this.steps.push({
       queue: [...this.items],
-      action: 'front',
+      action: "front",
       value,
-      message: `Front element is ${value}`
+      message: `Front element is ${value}`,
+      highlightIndex: 0,
     });
 
     return this.steps;
@@ -337,8 +370,13 @@ class Queue {
 }
 
 const queueOperations = (operation, ...args) => {
-  const queue = new Queue();
+  const queueState = args[args.length - 1] || [];
+  const value = args[0];
   
+  console.log(`Queue operation: ${operation}`, { value, queueState });
+
+  const queue = new Queue(queueState);
+
   const pseudocode = {
     enqueue: [
       'add element to rear of queue',
@@ -387,30 +425,44 @@ const queueOperations = (operation, ...args) => {
   };
 
   let steps;
-  switch (operation) {
-    case 'enqueue':
-      steps = queue.enqueue(args[0]);
-      break;
-    case 'dequeue':
-      steps = queue.dequeue();
-      break;
-    case 'front':
-      steps = queue.front();
-      break;
-    case 'bfs':
-      steps = queue.bfs(args[0], args[1]);
-      break;
-    case 'generateBinaryNumbers':
-      steps = queue.generateBinaryNumbers(args[0]);
-      break;
-    case 'circularTour':
-      steps = queue.circularTour(args[0], args[1]);
-      break;
-    default:
-      return { steps: [], pseudocode: [], error: 'Invalid operation' };
-  }
+  try {
+    switch (operation) {
+      case 'enqueue':
+        steps = queue.enqueue(value);
+        break;
+      case 'dequeue':
+        steps = queue.dequeue();
+        break;
+      case 'front':
+        steps = queue.front();
+        break;
+      case 'bfs':
+        steps = queue.bfs(args[0], args[1]);
+        break;
+      case 'generateBinaryNumbers':
+        steps = queue.generateBinaryNumbers(parseInt(value) || 5);
+        break;
+      case 'circularTour':
+        steps = queue.circularTour(args[0], args[1]);
+        break;
+      default:
+        return { steps: [], pseudocode: [], error: 'Invalid operation', queue: [] };
+    }
 
-  return { steps, pseudocode: pseudocode[operation], queue: queue.items };
+    return { 
+      steps, 
+      pseudocode: pseudocode[operation] || [], 
+      queue: queue.items 
+    };
+  } catch (error) {
+    console.error(`Error in queue operation ${operation}:`, error);
+    return { 
+      steps: [], 
+      pseudocode: [], 
+      error: error.message,
+      queue: queue.items 
+    };
+  }
 };
 
 module.exports = queueOperations;

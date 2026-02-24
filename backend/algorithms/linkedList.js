@@ -1,217 +1,566 @@
-// algorithms/linkedList.js
-class ListNode {
+// algorithms/algorithms/linkedList.js
+
+class Node {
   constructor(value) {
     this.value = value;
     this.next = null;
   }
 }
 
-class LinkedList {
-  constructor() {
-    this.head = null;
-    this.steps = [];
+// Helper function to convert array to linked list
+const arrayToLinkedList = (arr) => {
+  if (!arr || arr.length === 0) return null;
+  
+  const head = new Node(arr[0]);
+  let current = head;
+  
+  for (let i = 1; i < arr.length; i++) {
+    current.next = new Node(arr[i]);
+    current = current.next;
+  }
+  
+  return head;
+};
+
+// Helper function to convert linked list to array
+const linkedListToArray = (head) => {
+  const result = [];
+  let current = head;
+  while (current) {
+    result.push(current.value);
+    current = current.next;
+  }
+  return result;
+};
+
+// Helper function to count nodes
+const countNodes = (head) => {
+  let count = 0;
+  let current = head;
+  while (current) {
+    count++;
+    current = current.next;
+  }
+  return count;
+};
+
+// Main linked list operations
+const linkedListOperations = (operation, value, listState, options = {}) => {
+  let head = listState ? { ...listState } : null;
+  const steps = [];
+  const explanations = [];
+  const pseudocode = getPseudocode(operation);
+  
+  // Convert listState to proper Node structure if it's a plain object
+  if (head && !head.next && head.value !== undefined) {
+    // Already in correct format
+  } else if (Array.isArray(listState)) {
+    head = arrayToLinkedList(listState);
   }
 
-  // Single value insertion
-  insert(value) {
-    this.steps = [];
-    this.steps.push({
-      nodes: this.cloneList(),
-      currentNode: null,
-      action: 'start',
-      currentLine: 0,
-      explanation: 'Starting linked list insertion.',
-    });
+  switch (operation) {
+    case 'insert':
+      return insertOperation(head, value, steps, explanations, pseudocode);
+    
+    case 'delete':
+      return deleteOperation(head, value, steps, explanations, pseudocode);
+    
+    case 'search':
+      return searchOperation(head, value, steps, explanations, pseudocode);
+    
+    case 'traverse':
+      return traverseOperation(head, steps, explanations, pseudocode);
+    
+    case 'bulk-insert':
+      return bulkInsertOperation(head, value, steps, explanations, pseudocode);
+    
+    default:
+      throw new Error(`Unknown operation: ${operation}`);
+  }
+};
 
-    const newNode = new ListNode(value);
-    if (!this.head) {
-      this.head = newNode;
-      this.steps.push({
-        nodes: this.cloneList(),
-        currentNode: value,
-        action: 'insert-head',
-        currentLine: 1,
-        explanation: `Inserted ${value} as the head node.`,
-      });
-      return this.steps;
-    }
-
-    let current = this.head;
-    while (current.next) {
-      this.steps.push({
-        nodes: this.cloneList(),
-        currentNode: current.value,
-        action: 'traverse',
-        currentLine: 2,
-        explanation: `Traversing to node ${current.value}.`,
-      });
-      current = current.next;
-    }
-
-    current.next = newNode;
-    this.steps.push({
-      nodes: this.cloneList(),
+// Insert operation with step-by-step visualization
+const insertOperation = (head, value, steps, explanations, pseudocode) => {
+  const newNode = { value, next: null };
+  const nodes = head ? linkedListToArray(head).map(v => ({ value: v })) : [];
+  
+  // Step 1: Create new node
+  steps.push({
+    nodes: [...nodes],
+    currentNode: null,
+    action: 'insert-prepare',
+    message: `Step 1: Create new node with value ${value}`
+  });
+  explanations.push(`Creating a new node with value ${value}`);
+  
+  if (!head) {
+    // Insert into empty list
+    steps.push({
+      nodes: [{ value }],
       currentNode: value,
       action: 'insert',
-      currentLine: 3,
-      explanation: `Appended ${value} at the end of the list.`,
+      message: `Step 2: List is empty, making new node as head`
     });
-
-    return this.steps;
+    explanations.push(`List is empty. Setting new node as the head of the list.`);
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: { value, next: null }
+    };
   }
-
-  // Bulk insertion
-  bulkInsert(values) {
-    this.steps = [];
-    this.steps.push({
-      nodes: this.cloneList(),
-      currentNode: null,
-      action: 'start',
-      currentLine: 0,
-      explanation: 'Starting bulk insertion of multiple values.',
+  
+  // Insert at the end
+  let current = head;
+  let currentArray = linkedListToArray(head).map(v => ({ value: v }));
+  let position = 0;
+  
+  while (current.next) {
+    // Show traversal steps
+    steps.push({
+      nodes: currentArray.map((node, idx) => ({
+        ...node,
+        isCurrent: idx === position
+      })),
+      currentNode: current.value,
+      action: 'traverse',
+      message: `Step ${steps.length + 1}: Traversing to find insertion point`
     });
+    explanations.push(`Moving to next node. Current node: ${current.value}`);
+    
+    current = current.next;
+    position++;
+    currentArray = linkedListToArray(head).map(v => ({ value: v }));
+  }
+  
+  // Insert at the end
+  current.next = newNode;
+  const finalArray = linkedListToArray(head).map(v => ({ value: v }));
+  
+  steps.push({
+    nodes: finalArray.map((node, idx) => ({
+      ...node,
+      isCurrent: idx === finalArray.length - 1
+    })),
+    currentNode: value,
+    action: 'insert',
+    message: `Step ${steps.length + 1}: Inserted ${value} at the end`
+  });
+  explanations.push(`Inserted node with value ${value} at the end of the list.`);
+  
+  return {
+    steps,
+    explanations,
+    pseudocode,
+    list: head
+  };
+};
 
-    if (!Array.isArray(values) || values.length === 0) {
-      this.steps.push({
-        nodes: this.cloneList(),
-        currentNode: null,
-        action: 'error',
-        currentLine: 1,
-        explanation: 'No values provided for bulk insertion.',
+// Delete operation with step-by-step visualization
+const deleteOperation = (head, value, steps, explanations, pseudocode) => {
+  if (!head) {
+    steps.push({
+      nodes: [],
+      currentNode: null,
+      action: 'delete-empty',
+      message: 'List is empty, nothing to delete'
+    });
+    explanations.push('The list is empty. Cannot delete from an empty list.');
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: null
+    };
+  }
+  
+  const nodes = linkedListToArray(head).map(v => ({ value: v }));
+  
+  // Check if head node is to be deleted
+  if (head.value === value) {
+    steps.push({
+      nodes: nodes.map((node, idx) => ({
+        ...node,
+        isCurrent: idx === 0
+      })),
+      currentNode: head.value,
+      action: 'delete-head',
+      message: `Step 1: Found value ${value} at head`
+    });
+    explanations.push(`Found the value ${value} at the head of the list.`);
+    
+    const newHead = head.next;
+    const newNodes = newHead ? linkedListToArray(newHead).map(v => ({ value: v })) : [];
+    
+    steps.push({
+      nodes: newNodes,
+      currentNode: null,
+      action: 'delete',
+      message: `Step 2: Deleted head node with value ${value}`
+    });
+    explanations.push(`Deleted the head node. New head is ${newHead ? newHead.value : 'null'}.`);
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: newHead
+    };
+  }
+  
+  // Search for the node to delete
+  let current = head;
+  let prev = null;
+  let position = 0;
+  let found = false;
+  
+  while (current) {
+    // Show traversal steps
+    steps.push({
+      nodes: nodes.map((node, idx) => ({
+        ...node,
+        isCurrent: idx === position
+      })),
+      currentNode: current.value,
+      action: 'search',
+      message: `Step ${steps.length + 1}: Searching for value ${value}`
+    });
+    explanations.push(`Checking node with value ${current.value}...`);
+    
+    if (current.value === value) {
+      found = true;
+      steps.push({
+        nodes: nodes.map((node, idx) => ({
+          ...node,
+          isCurrent: idx === position,
+          isTarget: true
+        })),
+        currentNode: current.value,
+        action: 'delete-found',
+        message: `Step ${steps.length + 1}: Found value ${value} at position ${position}`
       });
-      return this.steps;
+      explanations.push(`Found the value ${value} at position ${position}.`);
+      break;
     }
-
-    values.forEach((value, index) => {
-      const newNode = new ListNode(value);
-      
-      if (!this.head) {
-        this.head = newNode;
-        this.steps.push({
-          nodes: this.cloneList(),
-          currentNode: value,
-          action: 'insert-head',
-          currentLine: 1,
-          explanation: `Inserted ${value} as the head node. (${index + 1}/${values.length})`,
-        });
-      } else {
-        let current = this.head;
-        while (current.next) {
-          current = current.next;
-        }
-        current.next = newNode;
-        this.steps.push({
-          nodes: this.cloneList(),
-          currentNode: value,
-          action: 'insert',
-          currentLine: 2,
-          explanation: `Appended ${value} at the end. (${index + 1}/${values.length})`,
-        });
-      }
-    });
-
-    this.steps.push({
-      nodes: this.cloneList(),
+    
+    prev = current;
+    current = current.next;
+    position++;
+  }
+  
+  if (!found) {
+    steps.push({
+      nodes: nodes,
       currentNode: null,
-      action: 'complete',
-      currentLine: 3,
-      explanation: `Bulk insertion completed. Added ${values.length} nodes.`,
+      action: 'delete-not-found',
+      message: `Value ${value} not found in the list`
     });
-
-    return this.steps;
+    explanations.push(`Value ${value} was not found in the list. Nothing to delete.`);
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: head
+    };
   }
-
-  delete(value) {
-    // ... keep existing delete method unchanged ...
+  
+  // Delete the node
+  if (prev) {
+    prev.next = current.next;
   }
+  
+  const finalNodes = linkedListToArray(head).map(v => ({ value: v }));
+  
+  steps.push({
+    nodes: finalNodes.map((node, idx) => ({
+      ...node,
+      isCurrent: null
+    })),
+    currentNode: null,
+    action: 'delete',
+    message: `Step ${steps.length + 1}: Deleted node with value ${value}`
+  });
+  explanations.push(`Successfully deleted node with value ${value}. List has been updated.`);
+  
+  return {
+    steps,
+    explanations,
+    pseudocode,
+    list: head
+  };
+};
 
-  traverse() {
-    // ... keep existing traverse method unchanged ...
+// Search operation with step-by-step visualization
+const searchOperation = (head, value, steps, explanations, pseudocode) => {
+  if (!head) {
+    steps.push({
+      nodes: [],
+      currentNode: null,
+      action: 'search-empty',
+      message: 'List is empty'
+    });
+    explanations.push('The list is empty. Cannot search in an empty list.');
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: null
+    };
   }
+  
+  const nodes = linkedListToArray(head).map(v => ({ value: v }));
+  let current = head;
+  let position = 0;
+  let found = false;
+  let foundPosition = -1;
+  
+  while (current) {
+    steps.push({
+      nodes: nodes.map((node, idx) => ({
+        ...node,
+        isCurrent: idx === position
+      })),
+      currentNode: current.value,
+      action: 'search',
+      message: `Step ${steps.length + 1}: Checking node ${position} with value ${current.value}`
+    });
+    explanations.push(`Searching at position ${position}: checking if ${current.value} equals ${value}...`);
+    
+    if (current.value === value) {
+      found = true;
+      foundPosition = position;
+      steps.push({
+        nodes: nodes.map((node, idx) => ({
+          ...node,
+          isCurrent: idx === position,
+          isFound: true
+        })),
+        currentNode: current.value,
+        action: 'search-found',
+        message: `Step ${steps.length + 1}: Found ${value} at position ${position}`
+      });
+      explanations.push(`✅ Value ${value} found at position ${position}!`);
+      break;
+    }
+    
+    current = current.next;
+    position++;
+  }
+  
+  if (!found) {
+    steps.push({
+      nodes: nodes,
+      currentNode: null,
+      action: 'search-not-found',
+      message: `Value ${value} not found in the list`
+    });
+    explanations.push(`❌ Value ${value} was not found in the list.`);
+  }
+  
+  return {
+    steps,
+    explanations,
+    pseudocode,
+    list: head
+  };
+};
 
-  cloneList() {
-    const nodes = [];
-    let current = this.head;
+// Traverse operation with step-by-step visualization
+const traverseOperation = (head, steps, explanations, pseudocode) => {
+  if (!head) {
+    steps.push({
+      nodes: [],
+      currentNode: null,
+      action: 'traverse-empty',
+      message: 'List is empty, nothing to traverse'
+    });
+    explanations.push('The list is empty. Nothing to traverse.');
+    
+    return {
+      steps,
+      explanations,
+      pseudocode,
+      list: null
+    };
+  }
+  
+  // Convert linked list to array of node objects for visualization
+  const convertToList = (head) => {
+    const result = [];
+    let current = head;
     while (current) {
-      nodes.push({ value: current.value, next: current.next ? current.next.value : null });
+      result.push({ 
+        value: current.value,
+        visited: false 
+      });
       current = current.next;
     }
-    return nodes;
-  }
-}
+    return result;
+  };
 
-const linkedListOperations = (operation, value, listState) => {
-  const list = new LinkedList();
-  if (listState) {
-    list.head = listState;
+  const nodes = convertToList(head);
+  let current = head;
+  let position = 0;
+  const traversalPath = [];
+  
+  // Clear any existing steps
+  steps = [];
+  
+  // Step 1: Start traversal
+  steps.push({
+    nodes: nodes.map((node, idx) => ({
+      ...node,
+      isCurrent: idx === 0,
+      visited: false
+    })),
+    currentNode: current.value,
+    path: [...traversalPath],
+    action: 'traverse-start',
+    message: `Step 1: Starting traversal from head node with value ${current.value}`
+  });
+  explanations.push(`Starting traversal from the head node with value ${current.value}`);
+  
+  traversalPath.push(current.value);
+  
+  // Update nodes with visited status
+  nodes[0].visited = true;
+  
+  // Step 2: Traverse through the list
+  while (current.next) {
+    current = current.next;
+    position++;
+    traversalPath.push(current.value);
+    
+    // Mark current node as visited
+    if (nodes[position]) {
+      nodes[position].visited = true;
+    }
+    
+    steps.push({
+      nodes: nodes.map((node, idx) => ({
+        ...node,
+        isCurrent: idx === position,
+        visited: node.visited || idx <= position
+      })),
+      currentNode: current.value,
+      path: [...traversalPath],
+      action: 'traverse',
+      message: `Step ${steps.length + 1}: Visiting node ${position} with value ${current.value}`
+    });
+    explanations.push(`Traversing: visiting node ${position} with value ${current.value}`);
   }
+  
+  // Final step: Traversal complete
+  steps.push({
+    nodes: nodes.map((node, idx) => ({
+      ...node,
+      isCurrent: false,
+      visited: true
+    })),
+    currentNode: null,
+    path: traversalPath,
+    action: 'traverse-complete',
+    message: `Traversal complete. Path: ${traversalPath.join(' → ')}`
+  });
+  explanations.push(`✅ Traversal complete. Visited ${traversalPath.length} nodes in order: ${traversalPath.join(' → ')}`);
+  
+  return {
+    steps,
+    explanations,
+    pseudocode,
+    list: head
+  };
+};
 
+// Bulk insert operation
+const bulkInsertOperation = (head, values, steps, explanations, pseudocode) => {
+  if (!values || !Array.isArray(values) || values.length === 0) {
+    throw new Error('Values array is required for bulk insert');
+  }
+  
+  let currentHead = head;
+  const insertedValues = [];
+  
+  steps.push({
+    nodes: currentHead ? linkedListToArray(currentHead).map(v => ({ value: v })) : [],
+    currentNode: null,
+    action: 'bulk-prepare',
+    message: `Starting bulk insert of ${values.length} values`
+  });
+  explanations.push(`Beginning bulk insert operation for values: ${values.join(', ')}`);
+  
+  // Insert each value sequentially
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i];
+    const result = insertOperation(currentHead, value, [], [], []);
+    currentHead = result.list;
+    insertedValues.push(value);
+    
+    steps.push({
+      nodes: linkedListToArray(currentHead).map(v => ({ value: v })),
+      currentNode: value,
+      action: 'bulk-insert',
+      message: `Inserted value ${value} (${i + 1}/${values.length})`
+    });
+    explanations.push(`Inserted value ${value}. ${i + 1} of ${values.length} values processed.`);
+  }
+  
+  steps.push({
+    nodes: linkedListToArray(currentHead).map(v => ({ value: v })),
+    currentNode: null,
+    action: 'bulk-complete',
+    message: `Bulk insert complete. Inserted ${values.length} values`
+  });
+  explanations.push(`✅ Bulk insert complete. Successfully inserted ${values.length} values.`);
+  
+  return {
+    steps,
+    explanations,
+    pseudocode,
+    list: currentHead
+  };
+};
+
+// Get pseudocode for operations
+const getPseudocode = (operation) => {
   const pseudocode = {
     insert: [
-      'if list is empty: set head to new node',
-      'traverse to end of list',
-      'append new node',
-    ],
-    'bulk-insert': [
-      'for each value in input array:',
-      '  if list is empty: set head to new node',
-      '  else: traverse to end and append',
-      'bulk insertion complete',
+      '1. Create new node with given value',
+      '2. If list is empty, make new node as head',
+      '3. Otherwise, traverse to the end of the list',
+      '4. Set last node\'s next pointer to new node',
+      '5. Update list size'
     ],
     delete: [
-      'if list is empty: return',
-      'if head has value: remove head',
-      'traverse to find value',
-      'remove node if found',
-      'if not found: do nothing',
+      '1. If list is empty, return',
+      '2. If head node matches value, update head to next node',
+      '3. Otherwise, traverse list to find node with matching value',
+      '4. Keep track of previous node while traversing',
+      '5. If node found, update previous node\'s next to skip the node',
+      '6. Return updated list'
+    ],
+    search: [
+      '1. If list is empty, return not found',
+      '2. Start from head and traverse through list',
+      '3. Compare each node\'s value with search value',
+      '4. If match found, return position and node',
+      '5. If end reached without match, return not found'
     ],
     traverse: [
-      'start at head',
-      'visit each node until end',
-    ],
+      '1. Start from head node',
+      '2. While current node is not null:',
+      '3.   Visit current node (process value)',
+      '4.   Move to next node',
+      '5. Repeat until end of list',
+      '6. Traversal complete'
+    ]
   };
   
-  const explanations = {
-    insert: [
-      'Start inserting a new node.',
-      'Insert as head if list is empty.',
-      'Traverse to the end of the list.',
-      'Append the new node.',
-    ],
-    'bulk-insert': [
-      'Starting bulk insertion of multiple values.',
-      'Processing each value in sequence.',
-      'Inserting values one by one.',
-      'Bulk insertion completed.',
-    ],
-    delete: [
-      'Start deleting a node.',
-      'List is empty, nothing to delete.',
-      'Remove head if it matches the value.',
-      'Traverse to find the value.',
-      'Remove the node if found.',
-      'Value not found in the list.',
-    ],
-    traverse: [
-      'Start traversing the list.',
-      'Visit each node in sequence.',
-    ],
-  };
-
-  let steps;
-  if (operation === 'insert') {
-    steps = list.insert(value);
-  } else if (operation === 'bulk-insert') {
-    steps = list.bulkInsert(value);
-  } else if (operation === 'delete') {
-    steps = list.delete(value);
-  } else if (operation === 'traverse') {
-    steps = list.traverse();
-  } else {
-    return { steps: [], pseudocode: [], explanations: [], error: 'Invalid operation' };
-  }
-
-  return { steps, pseudocode: pseudocode[operation], explanations: explanations[operation], list: list.head };
+  return pseudocode[operation] || pseudocode.insert;
 };
 
 module.exports = linkedListOperations;

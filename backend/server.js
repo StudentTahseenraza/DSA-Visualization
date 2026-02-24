@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const aiRoutes = require('./routes/aiVisualizationRoutes');
+
 
 // =====================
 // APP INITIALIZATION
@@ -81,6 +83,7 @@ const authRoutes = require("./routes/authRoutes");
 // Register routes
 app.use("/api", algorithmRoutes);
 app.use("/api/auth", authRoutes);
+app.use('/api/ai', aiRoutes);
 
 console.log("✅ All routes loaded successfully");
 

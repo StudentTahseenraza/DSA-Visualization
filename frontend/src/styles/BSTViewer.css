@@ -130,3 +130,35 @@
     gap: 2px;
   }
 }
+
+/* Add/update these styles in BSTViewer.css */
+.delete-message {
+  color: #e74c3c !important;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+.delete-message strong {
+  color: #fff;
+  background-color: #e74c3c;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 4px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.operation-status {
+  color: #f39c12;
+  font-style: italic;
+}

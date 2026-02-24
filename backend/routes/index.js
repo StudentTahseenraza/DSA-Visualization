@@ -18,6 +18,8 @@ const greedyRoutes = require("./greedyRoutes");
 const dpRoutes = require("./dpRoutes");
 const searchRoutes = require("./searchRoutes");
 const complexityRoutes = require("./complexityRoutes");
+const aiVisualizationRoutes = require('./aiVisualizationRoutes');
+const aiDebuggerRoutes = require('./aiDebuggerRoutes');
 
 // Register all routes
 router.use("/array", arrayRoutes);
@@ -36,5 +38,7 @@ router.use("/greedy", greedyRoutes);
 router.use("/dp", dpRoutes);
 router.use("/search", searchRoutes);
 router.use("/complexity", complexityRoutes);
+router.use('/ai', aiVisualizationRoutes);
+router.use('/debug', aiDebuggerRoutes);
 
 module.exports = router;

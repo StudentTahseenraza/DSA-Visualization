@@ -18,6 +18,10 @@ import comparisonAnimation from "../../public/lottie/sorting.json"; // New Lotti
 import "../styles/Homepage.css";
 import ThemeToggle from "./ThemeToggle";
 
+// Import new animations for AI features (you can reuse existing or create new ones)
+import aiCodeAnimation from "../../public/lottie/sorting.json"; // Replace with AI-specific animation
+import aiDebugAnimation from "../../public/lottie/sorting.json"; // Replace with debug-specific animation
+
 const Homepage = () => {
   const algorithmCategories = [
     {
@@ -320,24 +324,82 @@ const Homepage = () => {
         "Efficiency metrics",
       ],
     },
+    {
+      title: "🔍 AI Debugger Mode",
+      description: "Find bugs in your algorithm logic automatically!",
+      longDescription: "Paste your faulty algorithm and AI pinpoints the exact error, explains why it's wrong, and suggests fixes.",
+      animation: aiDebugAnimation,
+      color: "#e74c3c", // Red for debug
+      path: "/ai-debugger",
+      algorithms: [ // Added missing algorithms array
+        "Bug Detection",
+        "Error Analysis",
+        "Fix Suggestions",
+        "Step-by-step Debugging",
+        "Logic Validation",
+        "Code Correction"
+      ],
+      features: [
+        "Detects logical errors",
+        "Shows first failure step",
+        "Compares with expected behavior",
+        "Explains why output diverges",
+        "Suggests corrections",
+        "Perfect for debugging assignments"
+      ],
+      tagline: "🐛 First algorithm error analyzer!",
+      isNew: true
+    },
+    {
+      title: "🤖 AI Code Visualizer",
+      description: "Paste any code (Java/C++/Python) and watch it come alive!",
+      longDescription: "Upload your own code and our AI engine generates step-by-step visualization of YOUR exact logic. Works with any algorithm!",
+      animation: aiCodeAnimation,
+      color: "#9b59b6", // Purple for AI
+      path: "/ai-code-visualizer",
+      algorithms: [ // Added missing algorithms array
+        "Java Visualization",
+        "C++ Visualization",
+        "Python Visualization",
+        "Step-by-step Execution",
+        "Variable State Tracking",
+        "Algorithm Animation"
+      ],
+      features: [
+        "Supports Java, C++, Python",
+        "Auto-generates visualization steps",
+        "Shows variable states in real-time",
+        "Highlights comparisons & swaps",
+        "Step-by-step execution",
+        "Works with ANY algorithm logic"
+      ],
+      tagline: "✨ Unique: No other visualizer does this!",
+      isNew: true
+    },
   ];
+
+  // Add safe check before rendering
+  const safeAlgorithmCategories = algorithmCategories.map(category => ({
+    ...category,
+    algorithms: category.algorithms || [] // Ensure algorithms array exists
+  }));
 
   return (
     <div className="homepage">
       <div className="homepage-header">
-      <div className="header-content">
-        <h1>DSA Visualization</h1>
-        <p>Interactive visualizations for data structures and algorithms</p>
-        <div className="header-actions">
-          <Link to="/" className="nav-button">
-            ← Back to Landing
-          </Link>
-          <ThemeToggle />
+        <div className="header-content">
+          <h1>DSA Visualization</h1>
+          <p>Interactive visualizations for data structures and algorithms</p>
+          <div className="header-actions">
+            <Link to="/" className="nav-button">
+              ← Back to Landing
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
-    </div>
       <div className="algorithm-grid">
-        {algorithmCategories.map((category, index) => (
+        {safeAlgorithmCategories.map((category, index) => (
           <Link
             to={category.path}
             key={index}
@@ -355,18 +417,23 @@ const Homepage = () => {
             <div className="card-content">
               <h3>{category.title}</h3>
               <p>{category.description}</p>
-              <div className="algorithm-tags">
-                {category.algorithms.slice(0, 3).map((algo, i) => (
-                  <span key={i} className="algorithm-tag">
-                    {algo}
-                  </span>
-                ))}
-                {category.algorithms.length > 3 && (
-                  <span className="algorithm-tag">
-                    +{category.algorithms.length - 3} more
-                  </span>
-                )}
-              </div>
+              {category.algorithms && category.algorithms.length > 0 && (
+                <div className="algorithm-tags">
+                  {category.algorithms.slice(0, 3).map((algo, i) => (
+                    <span key={i} className="algorithm-tag">
+                      {algo}
+                    </span>
+                  ))}
+                  {category.algorithms.length > 3 && (
+                    <span className="algorithm-tag">
+                      +{category.algorithms.length - 3} more
+                    </span>
+                  )}
+                </div>
+              )}
+              {category.isNew && (
+                <span className="new-badge">NEW</span>
+              )}
             </div>
             <div className="card-explore">
               <span>Explore →</span>

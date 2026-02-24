@@ -16,7 +16,7 @@ import TrieViewer from "./TrieViewer";
 import BacktrackingViewer from "./BacktrackingViewer";
 import GreedyViewer from "./GreedyViewer";
 import DynamicProgrammingViewer from "./DynamicProgrammingViewer";
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import ArrayVisualizer from "./ArrayVisualizer";
 import ComplexityAnalysis from "./ComplexityAnalysis";
 import AlgorithmCompare from "./AlgorithmCompare";
@@ -34,14 +34,15 @@ import { useTheme } from "../contexts/ThemeContext";
 const AlgorithmPage = () => {
   // Array states
   const [array, setArray] = useState([5, 2, 8, 1, 4, 3, 6, 7]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(500);
   const [algorithmData, setAlgorithmData] = useState({
     steps: [],
     pseudocode: [],
     explanations: [],
   });
+
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(500);
   const [aiExplanation, setAiExplanation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [comparisonResults, setComparisonResults] = useState([]);
@@ -179,8 +180,8 @@ const AlgorithmPage = () => {
   const { isDarkMode } = useTheme();
 
 
-  // const BASE_URL = "http://localhost:5000/api";
-  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
 
 
   // Set default algorithm based on category
@@ -221,6 +222,8 @@ const AlgorithmPage = () => {
   };
 
   // Fetch algorithm steps
+  // In AlgorithmPage.jsx, update the fetchAlgorithmSteps function for the trees category:
+
   const fetchAlgorithmSteps = async () => {
     setIsLoading(true);
     try {
@@ -248,326 +251,473 @@ const AlgorithmPage = () => {
 
         // Handle bulk insert
         if (bstOperation === "bulk-insert") {
-    try {
-      // Parse the comma-separated string into an array of numbers
-      valueToSend = bstValue
-        .split(",")
-        .map((v) => parseInt(v.trim()))
-        .filter((v) => !isNaN(v));
-      if (valueToSend.length === 0) {
-        toast.warning("🌳 Please enter valid numbers separated by commas", {
+          try {
+            // Parse the comma-separated string into an array of numbers
+            valueToSend = bstValue
+              .split(",")
+              .map((v) => parseInt(v.trim()))
+              .filter((v) => !isNaN(v));
+            if (valueToSend.length === 0) {
+              toast.warning("🌳 Please enter valid numbers separated by commas", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+              });
+              setIsLoading(false);
+              return;
+            }
+          } catch (error) {
+            toast.error("❌ Invalid input format. Please enter numbers separated by commas.", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "colored",
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
+        // Handle traversal operations
+        else if (bstOperation.startsWith("traverse-")) {
+          operation = bstOperation;
+          valueToSend = null; // No value needed for traversal
+          options = { order: bstOperation.replace("traverse-", "") };
+        }
+        // Handle regular operations - ensure it's a number
+        else if (["insert", "search", "delete"].includes(bstOperation)) {
+          valueToSend = parseInt(bstValue);
+          if (isNaN(valueToSend)) {
+            toast.warning("🔢 Please enter a valid number", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "colored",
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        response = await axios.post(`${BASE_URL}/bst/${operation}`, {
+          value: valueToSend,
+          treeState: bstTree,
+          options: options,
+        });
+
+        // CRITICAL FIX: Update bstTree with the new tree from response
+        setBstTree(response.data.tree);
+
+        // Also update algorithmData with the steps
+        setAlgorithmData(response.data);
+
+        // Reset to first step
+        setCurrentStep(0);
+        setIsPlaying(false);
+
+        // Success toast for tree operations
+        if (bstOperation === "bulk-insert") {
+          toast.success(`🌳 Successfully inserted ${valueToSend.length} values`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        } else if (bstOperation.startsWith("traverse-")) {
+          toast.info(`🔄 ${getBstOperationDisplayName(bstOperation)} completed`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        } else {
+          toast.success(`✅ ${getBstOperationDisplayName(bstOperation)} operation successful`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        }
+
+        // Return early to avoid duplicate processing
+        setIsLoading(false);
+        return;
+
+      } else if (category === "graphs") {
+        response = await axios.post(`${BASE_URL}/graph/${selectedAlgorithm}`, {
+          graph,
+          start: graphStartNode,
+        });
+
+        // Success toast for graph algorithms
+        toast.success(`📊 ${selectedAlgorithm.replace(/-/g, ' ')} executed successfully`, {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 4000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           theme: "colored",
         });
-        return;
-      }
-    } catch (error) {
-      toast.error("❌ Invalid input format. Please enter numbers separated by commas.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
 
-    // Handle traversal operations
-    else if (bstOperation.startsWith("traverse-")) {
-    operation = bstOperation;
-    valueToSend = null; // No value needed for traversal
-    options = { order: bstOperation.replace("traverse-", "") };
-  }
-  // Handle regular operations - ensure it's a number
-  else if (["insert", "search", "delete"].includes(bstOperation)) {
-    valueToSend = parseInt(bstValue);
-    if (isNaN(valueToSend)) {
-      toast.warning("🔢 Please enter a valid number", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
-  response = await axios.post(`${BASE_URL}/bst/${operation}`, {
-    value: valueToSend,
-    treeState: bstTree,
-    options: options,
-  });
-  setBstTree(response.data.tree);
-  
-  // Success toast for tree operations
-  if (bstOperation === "bulk-insert") {
-    toast.success(`🌳 Successfully inserted ${valueToSend.length} values`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else if (bstOperation.startsWith("traverse-")) {
-    toast.info(`🔄 ${getBstOperationDisplayName(bstOperation)} completed`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else {
-    toast.success(`✅ ${getBstOperationDisplayName(bstOperation)} operation successful`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-  
-} else if (category === "graphs") {
-  response = await axios.post(`${BASE_URL}/graph/${selectedAlgorithm}`, {
-    graph,
-    start: graphStartNode,
-  });
-  
-  // Success toast for graph algorithms
-  toast.success(`📊 ${selectedAlgorithm.replace(/-/g, ' ')} executed successfully`, {
-    position: "top-right",
-    autoClose: 4000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-  
-} else if (category === "linked-list") {
-  // For bulk insert, we need to handle it differently
-  if (listOperation === "bulk-insert") {
-    // This will be handled by handleListOperation directly
-    return;
-  }
+      } // In the linked list section of fetchAlgorithmSteps:
 
-  // For other operations, use the normal flow
-  response = await axios.post(`${BASE_URL}/linkedList/${listOperation}`, {
-    value: listOperation !== "traverse" ? parseInt(listValue) : null,
-    listState: linkedList,
-  });
-  setLinkedList(response.data.list);
-  
-  // Success toast for linked list operations
-  if (listOperation === "traverse") {
-    toast.info("🔗 Linked list traversal completed", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else {
-    toast.success(`✅ ${listOperation} operation successful`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-  
-} else if (category === "heap") {
-  response = await axios.post(`${BASE_URL}/heap/${heapOperation}`, {
-    value: parseInt(heapValue),
-    heapState: heap,
-  });
-  setHeap(response.data.heap);
-  
-  toast.success(`📚 Heap ${heapOperation} operation successful`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-  
-} else if (category === "trie") {
-  response = await axios.post(`${BASE_URL}/trie/${trieOperation}`, {
-    word: trieWord,
-    trieState: trie,
-  });
-  setTrie(response.data.trie);
-  
-  toast.success(`🔤 Trie ${trieOperation} operation successful`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-  
-} else if (category === "stack") {
-  response = await axios.post(`${BASE_URL}/stack/${stackOperation}`, {
-    value: stackOperation === "pushMultiple" ? stackValues : stackValue,
-    stackState: stack,
-  });
-  setStack(response.data.stack);
-  
-  toast.success(`📚 Stack ${stackOperation} operation successful`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-  
-} else if (category === "queue") {
-  response = await axios.post(`${BASE_URL}/queue/${queueOperation}`, {
-    value: queueValue,
-    queueState: queue,
-  });
-  setQueue(response.data.queue);
-  
-  toast.success(`📥 Queue ${queueOperation} operation successful`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-  
-} else if (category === "backtracking") {
-  if (selectedAlgorithm === "n-queens") {
-    response = await axios.post(`${BASE_URL}/backtracking/n-queens`, {
-      n: nQueensSize,
-    });
-    toast.success(`♕ N-Queens solution found for ${nQueensSize}x${nQueensSize} board`, {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else if (selectedAlgorithm === "sudoku-solver") {
-    response = await axios.post(
-      `${BASE_URL}/backtracking/sudoku-solver`,
-      {
-        grid: sudokuGrid,
-      }
-    );
-    toast.success("🧩 Sudoku puzzle solved successfully", {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-} else if (category === "greedy") {
-  if (selectedAlgorithm === "activity-selection") {
-    response = await axios.post(`${BASE_URL}/greedy/activity-selection`, {
-      activities,
-    });
-    toast.success("📅 Activity selection optimized", {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else if (selectedAlgorithm === "fractional-knapsack") {
-    response = await axios.post(
-      `${BASE_URL}/greedy/fractional-knapsack`,
-      {
-        items: knapsackItems,
-        capacity: knapsackCapacity,
-      }
-    );
-    toast.success("🎒 Fractional knapsack solution found", {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-} else if (category === "dynamic-programming") {
-  if (selectedAlgorithm === "fibonacci") {
-    response = await axios.post(`${BASE_URL}/dp/fibonacci`, {
-      n: fibonacciN,
-    });
-    toast.success(`🔢 Fibonacci sequence calculated for n=${fibonacciN}`, {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } else if (selectedAlgorithm === "knapsack-dp") {
-    response = await axios.post(`${BASE_URL}/dp/knapsack-dp`, {
-      items: dpKnapsackItems,
-      capacity: dpKnapsackCapacity,
-    });
-    toast.success("💼 0/1 Knapsack DP solution found", {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-}
+      else if (category === "linked-list") {
+        // For bulk insert, we need to handle it differently
+        if (listOperation === "bulk-insert") {
+          // This will be handled by handleListOperation directly
+          setIsLoading(false);
+          return;
+        }
 
-setAlgorithmData(response.data);
-setCurrentStep(0);
-setIsPlaying(false);
+        // For other operations, use the normal flow
+        let valueToSend = null;
+        if (listOperation !== "traverse") {
+          valueToSend = parseInt(listValue);
+          if (isNaN(valueToSend)) {
+            toast.error("❌ Please enter a valid number", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        console.log(`Sending ${listOperation} request with value:`, valueToSend);
+
+        response = await axios.post(`${BASE_URL}/linkedList/${listOperation}`, {
+          value: valueToSend,
+          listState: linkedList,
+        });
+
+        console.log('Linked List API Response:', response.data);
+
+        // Update the linked list state
+        setLinkedList(response.data.list);
+
+        // Ensure steps array exists
+        let steps = Array.isArray(response.data.steps) ? response.data.steps : [];
+        const explanations = Array.isArray(response.data.explanations) ? response.data.explanations : [];
+        const pseudocode = Array.isArray(response.data.pseudocode) ? response.data.pseudocode :
+          ['1. start at head', '2. visit each node until end'];
+
+        // Convert linked list to nodes array for visualization
+        const convertToList = (head) => {
+          if (!head) return [];
+          const result = [];
+          let current = head;
+          while (current) {
+            result.push({
+              value: current.value,
+              visited: false
+            });
+            current = current.next;
+          }
+          return result;
+        };
+
+        const nodes = convertToList(response.data.list);
+
+        // If steps is empty but we have a list, create steps
+        if (steps.length === 0 && nodes.length > 0) {
+          if (listOperation === "traverse") {
+            // Create traverse steps
+            const path = [];
+            for (let i = 0; i < nodes.length; i++) {
+              path.push(nodes[i].value);
+              steps.push({
+                nodes: nodes.map((node, idx) => ({
+                  ...node,
+                  isCurrent: idx === i,
+                  visited: idx <= i
+                })),
+                currentNode: nodes[i].value,
+                path: [...path],
+                action: i === 0 ? 'traverse-start' : (i === nodes.length - 1 ? 'traverse-complete' : 'traverse'),
+                message: i === 0
+                  ? `Step ${i + 1}: Starting traversal from head node with value ${nodes[i].value}`
+                  : i === nodes.length - 1
+                    ? `Step ${i + 1}: Reached end node with value ${nodes[i].value}`
+                    : `Step ${i + 1}: Visiting node ${i} with value ${nodes[i].value}`
+              });
+            }
+
+            // Add final summary
+            steps.push({
+              nodes: nodes.map(node => ({ ...node, visited: true })),
+              currentNode: null,
+              path: path,
+              action: 'traverse-complete',
+              message: `Traversal complete. Path: ${path.join(' → ')}`
+            });
+
+            console.log('Created traverse steps:', steps);
+          } else if (listOperation === "delete") {
+            // Create delete step
+            steps.push({
+              nodes: nodes,
+              currentNode: null,
+              action: 'delete',
+              message: `Successfully deleted value ${valueToSend}`
+            });
+          }
+        }
+
+        // Make sure each step has nodes
+        steps = steps.map(step => ({
+          ...step,
+          nodes: step.nodes || nodes
+        }));
+
+        console.log('Final processed steps:', steps);
+
+        setAlgorithmData({
+          steps: steps,
+          explanations: explanations.length > 0 ? explanations : steps.map(s => s.message),
+          pseudocode: pseudocode,
+          list: response.data.list,
+          currentList: response.data.list
+        });
+
+        setCurrentStep(0);
+        setIsPlaying(false);
+
+        // Success toast for linked list operations
+        if (listOperation === "traverse") {
+          toast.success(`🔗 Linked list traversal completed - Visited ${nodes.length} nodes`, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        } else if (listOperation === "search") {
+          const found = steps.some(step => step.action === 'search-found');
+          if (found) {
+            toast.success(`✅ Value ${valueToSend} found in the list!`, {
+              position: "top-right",
+              autoClose: 3000,
+            });
+          } else {
+            toast.warning(`❌ Value ${valueToSend} not found in the list`, {
+              position: "top-right",
+              autoClose: 3000,
+            });
+          }
+        } else if (listOperation === "delete") {
+          toast.success(`✅ Successfully deleted value ${valueToSend}`, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        } else {
+          toast.success(`✅ ${listOperation} operation successful`, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        }
+
+
+      } else if (category === "heap") {
+        response = await axios.post(`${BASE_URL}/heap/${heapOperation}`, {
+          value: parseInt(heapValue),
+          heapState: heap,
+        });
+        setHeap(response.data.heap);
+
+        toast.success(`📚 Heap ${heapOperation} operation successful`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+      } else if (category === "trie") {
+        response = await axios.post(`${BASE_URL}/trie/${trieOperation}`, {
+          word: trieWord,
+          trieState: trie,
+        });
+        setTrie(response.data.trie);
+
+        toast.success(`🔤 Trie ${trieOperation} operation successful`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+      } else if (category === "stack") {
+        response = await axios.post(`${BASE_URL}/stack/${stackOperation}`, {
+          value: stackOperation === "pushMultiple" ? stackValues : stackValue,
+          stackState: stack,
+        });
+        setStack(response.data.stack);
+
+        toast.success(`📚 Stack ${stackOperation} operation successful`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+      } else if (category === "queue") {
+        response = await axios.post(`${BASE_URL}/queue/${queueOperation}`, {
+          value: queueValue,
+          queueState: queue,
+        });
+        setQueue(response.data.queue);
+
+        toast.success(`📥 Queue ${queueOperation} operation successful`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+      } else if (category === "backtracking") {
+        if (selectedAlgorithm === "n-queens") {
+          response = await axios.post(`${BASE_URL}/backtracking/n-queens`, {
+            n: nQueensSize,
+          });
+          toast.success(`♕ N-Queens solution found for ${nQueensSize}x${nQueensSize} board`, {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        } else if (selectedAlgorithm === "sudoku-solver") {
+          response = await axios.post(
+            `${BASE_URL}/backtracking/sudoku-solver`,
+            {
+              grid: sudokuGrid,
+            }
+          );
+          toast.success("🧩 Sudoku puzzle solved successfully", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        }
+      } else if (category === "greedy") {
+        if (selectedAlgorithm === "activity-selection") {
+          response = await axios.post(`${BASE_URL}/greedy/activity-selection`, {
+            activities,
+          });
+          toast.success("📅 Activity selection optimized", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        } else if (selectedAlgorithm === "fractional-knapsack") {
+          response = await axios.post(
+            `${BASE_URL}/greedy/fractional-knapsack`,
+            {
+              items: knapsackItems,
+              capacity: knapsackCapacity,
+            }
+          );
+          toast.success("🎒 Fractional knapsack solution found", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        }
+      } else if (category === "dynamic-programming") {
+        if (selectedAlgorithm === "fibonacci") {
+          response = await axios.post(`${BASE_URL}/dp/fibonacci`, {
+            n: fibonacciN,
+          });
+          toast.success(`🔢 Fibonacci sequence calculated for n=${fibonacciN}`, {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        } else if (selectedAlgorithm === "knapsack-dp") {
+          response = await axios.post(`${BASE_URL}/dp/knapsack-dp`, {
+            items: dpKnapsackItems,
+            capacity: dpKnapsackCapacity,
+          });
+          toast.success("💼 0/1 Knapsack DP solution found", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+        }
+      }
+
+      // For non-tree operations, update algorithm data
+      if (category !== "trees") {
+        setAlgorithmData(response.data);
+        setCurrentStep(0);
+        setIsPlaying(false);
+      }
+
     } catch (error) {
       console.error("Error fetching algorithm steps:", error);
       setAlgorithmData({ steps: [], pseudocode: [], explanations: [] });
       setAiExplanation(
         error.response?.data?.error ||
-          "Error loading algorithm steps. Please check inputs."
+        "Error loading algorithm steps. Please check inputs."
       );
+      toast.error(`❌ ${error.response?.data?.error || "Error performing operation"}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -575,163 +725,187 @@ setIsPlaying(false);
 
   // Graph operations
   const addGraphNode = () => {
-  if (!graphNode) {
-    toast.warning("⚠️ Please enter a node name", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  if (graph[graphNode]) {
-    toast.warning("⚠️ Node already exists", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  setGraph((prev) => ({ ...prev, [graphNode]: {} }));
-  setGraphNode("");
-  toast.success(`✅ Node '${graphNode}' added successfully`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-};
-
-  const addGraphEdge = () => {
-  if (
-    !graphEdgeFrom ||
-    !graphEdgeTo ||
-    !graphEdgeWeight ||
-    isNaN(parseInt(graphEdgeWeight))
-  ) {
-    toast.error("❌ Please enter valid from node, to node, and weight", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  if (!graph[graphEdgeFrom] || !graph[graphEdgeTo]) {
-    toast.error("❌ One or both nodes do not exist", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  setGraph((prev) => ({
-    ...prev,
-    [graphEdgeFrom]: {
-      ...prev[graphEdgeFrom],
-      [graphEdgeTo]: parseInt(graphEdgeWeight),
-    },
-    [graphEdgeTo]: {
-      ...prev[graphEdgeTo],
-      [graphEdgeFrom]: parseInt(graphEdgeWeight),
-    },
-  }));
-  setGraphEdgeFrom("");
-  setGraphEdgeTo("");
-  setGraphEdgeWeight("");
-  toast.success(`✅ Edge ${graphEdgeFrom} ↔ ${graphEdgeTo} (weight: ${graphEdgeWeight}) added`, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-};
-  const fetchAlgorithmStepsWithValues = async (customValues = null) => {
-  setIsLoading(true);
-  try {
-    let valueToSend = customValues;
-
-    // If no custom values provided, use the state values
-    if (!valueToSend) {
-      if (listOperation !== "traverse") {
-        valueToSend = parseInt(listValue);
-      }
-    }
-
-    const response = await axios.post(
-      `${BASE_URL}/linkedList/${listOperation}`,
-      {
-        value: valueToSend,
-        listState: linkedList,
-      }
-    );
-
-    setLinkedList(response.data.list);
-    setAlgorithmData(response.data);
-    setCurrentStep(0);
-    setIsPlaying(false);
-    
-    // Success toast for bulk operations
-    if (Array.isArray(customValues)) {
-      toast.success(`✅ Successfully inserted ${customValues.length} values`, {
+    if (!graphNode) {
+      toast.warning("⚠️ Please enter a node name", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         theme: "colored",
       });
+      return;
     }
-    
-  } catch (error) {
-    console.error("Error fetching linked list steps:", error);
-    setAlgorithmData({ steps: [], pseudocode: [], explanations: [] });
-    setAiExplanation(
-      error.response?.data?.error ||
-      "Error loading linked list steps. Please check inputs."
-    );
-    toast.error("❌ Error performing linked list operation", {
+    if (graph[graphNode]) {
+      toast.warning("⚠️ Node already exists", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    setGraph((prev) => ({ ...prev, [graphNode]: {} }));
+    setGraphNode("");
+    toast.success(`✅ Node '${graphNode}' added successfully`, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       theme: "colored",
     });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
+
+  const addGraphEdge = () => {
+    if (
+      !graphEdgeFrom ||
+      !graphEdgeTo ||
+      !graphEdgeWeight ||
+      isNaN(parseInt(graphEdgeWeight))
+    ) {
+      toast.error("❌ Please enter valid from node, to node, and weight", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    if (!graph[graphEdgeFrom] || !graph[graphEdgeTo]) {
+      toast.error("❌ One or both nodes do not exist", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    setGraph((prev) => ({
+      ...prev,
+      [graphEdgeFrom]: {
+        ...prev[graphEdgeFrom],
+        [graphEdgeTo]: parseInt(graphEdgeWeight),
+      },
+      [graphEdgeTo]: {
+        ...prev[graphEdgeTo],
+        [graphEdgeFrom]: parseInt(graphEdgeWeight),
+      },
+    }));
+    setGraphEdgeFrom("");
+    setGraphEdgeTo("");
+    setGraphEdgeWeight("");
+    toast.success(`✅ Edge ${graphEdgeFrom} ↔ ${graphEdgeTo} (weight: ${graphEdgeWeight}) added`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
+  };
+  const fetchAlgorithmStepsWithValues = async (customValues = null) => {
+    setIsLoading(true);
+    try {
+      let valueToSend = customValues;
+
+      // If no custom values provided, use the state values
+      if (!valueToSend) {
+        if (listOperation !== "traverse") {
+          valueToSend = parseInt(listValue);
+        }
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/linkedList/${listOperation}`,
+        {
+          value: valueToSend,
+          listState: linkedList,
+        }
+      );
+
+      setLinkedList(response.data.list);
+      setAlgorithmData(response.data);
+      setCurrentStep(0);
+      setIsPlaying(false);
+
+      // Success toast for bulk operations
+      if (Array.isArray(customValues)) {
+        toast.success(`✅ Successfully inserted ${customValues.length} values`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+      }
+
+    } catch (error) {
+      console.error("Error fetching linked list steps:", error);
+      setAlgorithmData({ steps: [], pseudocode: [], explanations: [] });
+      setAiExplanation(
+        error.response?.data?.error ||
+        "Error loading linked list steps. Please check inputs."
+      );
+      toast.error("❌ Error performing linked list operation", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
-  // Animation control
+  // In AlgorithmPage.jsx, update the animation control useEffect:
+
+  // Animation control with null checks
+  // Animation control with comprehensive null checks
   useEffect(() => {
+    // Add safety check for algorithmData and algorithmData.steps
+    if (!algorithmData ||
+      !algorithmData.steps ||
+      !Array.isArray(algorithmData.steps) ||
+      algorithmData.steps.length === 0) {
+      // No steps to animate, clear any existing interval
+      if (animationInterval.current) {
+        clearInterval(animationInterval.current);
+        animationInterval.current = null;
+      }
+      return;
+    }
+
     if (isPlaying && currentStep < algorithmData.steps.length - 1) {
+      // Clear any existing interval before setting a new one
+      if (animationInterval.current) {
+        clearInterval(animationInterval.current);
+      }
+
       animationInterval.current = setInterval(() => {
         setCurrentStep((prev) => {
-          if (prev >= algorithmData.steps.length - 1) {
+          // Add safety check inside the callback too
+          if (!algorithmData?.steps ||
+            !Array.isArray(algorithmData.steps) ||
+            prev >= algorithmData.steps.length - 1) {
             setIsPlaying(false);
             return prev;
           }
@@ -740,23 +914,33 @@ setIsPlaying(false);
       }, speed);
     } else if (animationInterval.current) {
       clearInterval(animationInterval.current);
+      animationInterval.current = null;
     }
 
     return () => {
       if (animationInterval.current) {
         clearInterval(animationInterval.current);
+        animationInterval.current = null;
       }
     };
-  }, [isPlaying, currentStep, speed, algorithmData.steps.length]);
+  }, [isPlaying, currentStep, speed, algorithmData]); // Remove steps.length from dependencies, use algorithmData instead
 
   // Step explanation
+  // Step explanation with comprehensive null checks
   useEffect(() => {
-    if (algorithmData.steps.length > 0) {
+    if (algorithmData?.steps &&
+      Array.isArray(algorithmData.steps) &&
+      algorithmData.steps.length > 0 &&
+      currentStep >= 0 &&
+      currentStep < algorithmData.steps.length) {
+
       const step = algorithmData.steps[currentStep];
-      const explanation =
-        algorithmData.explanations && algorithmData.explanations[currentStep]
-          ? algorithmData.explanations[currentStep]
-          : `Step ${currentStep + 1}: ${step.action || "Processing..."}`;
+      const explanation = algorithmData.explanations &&
+        Array.isArray(algorithmData.explanations) &&
+        algorithmData.explanations[currentStep]
+        ? algorithmData.explanations[currentStep]
+        : step?.message || `Step ${currentStep + 1}: ${step?.action || "Processing..."}`;
+
       setAiExplanation(explanation);
     } else {
       setAiExplanation('Click "Run Algorithm" to start visualization.');
@@ -945,46 +1129,329 @@ setIsPlaying(false);
 
   // In AlgorithmPage.jsx, update the handleGraphOperation function:
   const handleGraphOperation = () => {
-  if (selectedAlgorithm === "kruskals-algorithm") {
-    // Kruskal's doesn't need a start node, just check if graph exists
-    if (!graph || Object.keys(graph).length === 0) {
-      toast.error("❌ Please create a graph first for Kruskal's algorithm", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
+    if (selectedAlgorithm === "kruskals-algorithm") {
+      // Kruskal's doesn't need a start node, just check if graph exists
+      if (!graph || Object.keys(graph).length === 0) {
+        toast.error("❌ Please create a graph first for Kruskal's algorithm", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+      // Set a dummy start node for the API call (it will be ignored by Kruskal's)
+      setGraphStartNode(Object.keys(graph)[0]);
+    } else {
+      // Other algorithms need start node
+      if (!graphStartNode || !graph[graphStartNode]) {
+        toast.error(`❌ Start node '${graphStartNode}' not found in graph`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
     }
-    // Set a dummy start node for the API call (it will be ignored by Kruskal's)
-    setGraphStartNode(Object.keys(graph)[0]);
-  } else {
-    // Other algorithms need start node
-    if (!graphStartNode || !graph[graphStartNode]) {
-      toast.error(`❌ Start node '${graphStartNode}' not found in graph`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
-  fetchAlgorithmSteps();
-};
+    fetchAlgorithmSteps();
+  };
 
 
   const handleListOperation = () => {
-  if (listOperation === "bulk-insert") {
-    // For bulk insert, listValue is a string that needs to be parsed
-    if (!listValue || typeof listValue !== "string" || !listValue.trim()) {
-      toast.error("❌ Please enter values for bulk insertion", {
+    if (listOperation === "bulk-insert") {
+      // For bulk insert, listValue is a string that needs to be parsed
+      if (!listValue || typeof listValue !== "string" || !listValue.trim()) {
+        toast.error("❌ Please enter values for bulk insertion", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+
+      try {
+        // Parse comma-separated values into array
+        const values = listValue
+          .split(",")
+          .map((v) => parseInt(v.trim()))
+          .filter((v) => !isNaN(v));
+
+        if (values.length === 0) {
+          toast.error("❌ Please enter valid numbers separated by commas", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+          return;
+        }
+
+        // Call the API with the array directly
+        fetchAlgorithmStepsWithValues(values);
+      } catch (error) {
+        toast.error("❌ Invalid input format. Please enter numbers separated by commas.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+      }
+    } else {
+      // For single operations
+      if (listOperation !== "traverse" && (!listValue || listValue === "")) {
+        toast.warning("⚠️ Please enter a value for the Linked List operation", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+
+
+      // For single insert/delete, convert to number
+      let valueToSend = listValue;
+      if (listOperation !== "traverse") {
+        const numValue = parseInt(listValue);
+        if (isNaN(numValue)) {
+          toast.error("❌ Please enter a valid number", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+          return;
+        }
+        valueToSend = numValue;
+      }
+
+      fetchAlgorithmSteps();
+    }
+  };
+
+  const handleHeapOperation = () => {
+    if (heapOperation !== "heapify" && heapValue === "") {
+      toast.warning("📚 Please enter a value for the Heap operation", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    fetchAlgorithmSteps();
+  };
+
+  const handleTrieOperation = () => {
+    if (!trieWord) {
+      toast.warning("🔤 Please enter a word for the Trie operation", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    fetchAlgorithmSteps();
+  };
+
+  const handleStackOperation = () => {
+    if (
+      (stackOperation === "push" || stackOperation === "pushMultiple") &&
+      !stackValue
+    ) {
+      toast.warning("📚 Please enter a value for the stack operation", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    fetchAlgorithmSteps();
+  };
+
+  const handleQueueOperation = () => {
+    if (queueOperation === "enqueue" && !queueValue) {
+      toast.warning("📥 Please enter a value for the queue operation", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+    fetchAlgorithmSteps();
+  };
+
+  const handleBacktrackingOperation = () => {
+    // Validate N-Queens size
+    if (selectedAlgorithm === "n-queens" && (!nQueensSize || nQueensSize < 1)) {
+      toast.warning("♕ Please enter a valid board size for N-Queens", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
+    // Validate Sudoku grid
+    if (selectedAlgorithm === "sudoku-solver") {
+      if (!sudokuGrid || sudokuGrid.length === 0) {
+        toast.warning("🧩 Please provide a Sudoku grid to solve", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+    }
+
+    fetchAlgorithmSteps();
+  };
+
+  const handleGreedyOperation = () => {
+    // Validate Activity Selection
+    if (selectedAlgorithm === "activity-selection") {
+      if (!activities || activities.length === 0) {
+        toast.warning("📅 Please add activities for Activity Selection", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+    }
+
+    // Validate Fractional Knapsack
+    if (selectedAlgorithm === "fractional-knapsack") {
+      if (!knapsackItems || knapsackItems.length === 0) {
+        toast.warning("🎒 Please add items for Fractional Knapsack", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+      if (!knapsackCapacity || knapsackCapacity <= 0) {
+        toast.warning("⚖️ Please enter a valid capacity for Knapsack", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+    }
+
+    fetchAlgorithmSteps();
+  };
+
+  const handleDynamicProgrammingOperation = () => {
+    // Validate Fibonacci input
+    if (selectedAlgorithm === "fibonacci") {
+      if (!fibonacciN || fibonacciN < 0) {
+        toast.warning("🔢 Please enter a valid non-negative number for Fibonacci", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+    }
+
+    // Validate Knapsack DP
+    if (selectedAlgorithm === "knapsack-dp") {
+      if (!dpKnapsackItems || dpKnapsackItems.length === 0) {
+        toast.warning("💼 Please add items for 0/1 Knapsack", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+      if (!dpKnapsackCapacity || dpKnapsackCapacity <= 0) {
+        toast.warning("⚖️ Please enter a valid capacity for 0/1 Knapsack", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+    }
+
+    fetchAlgorithmSteps();
+  };
+
+  const handleBulkListInsert = () => {
+    if (!listValue.trim()) {
+      toast.warning("🔗 Please enter values for bulk insertion", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -997,14 +1464,13 @@ setIsPlaying(false);
     }
 
     try {
-      // Parse comma-separated values into array
       const values = listValue
         .split(",")
         .map((v) => parseInt(v.trim()))
         .filter((v) => !isNaN(v));
 
       if (values.length === 0) {
-        toast.error("❌ Please enter valid numbers separated by commas", {
+        toast.warning("🔢 Please enter valid numbers separated by commas", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -1016,8 +1482,33 @@ setIsPlaying(false);
         return;
       }
 
-      // Call the API with the array directly
-      fetchAlgorithmStepsWithValues(values);
+      // Show loading toast for bulk operation
+      const loadingToast = toast.loading(`🔄 Inserting ${values.length} values...`, {
+        position: "top-right",
+      });
+
+      // Insert values one by one with delays to show the process
+      values.forEach((value, index) => {
+        setTimeout(() => {
+          setListValue(value.toString());
+          fetchAlgorithmSteps();
+
+          // Update toast on each insertion
+          if (index === values.length - 1) {
+            toast.update(loadingToast, {
+              render: `✅ Successfully inserted ${values.length} values!`,
+              type: "success",
+              isLoading: false,
+              autoClose: 3000,
+              hideProgressBar: false,
+            });
+          } else {
+            toast.update(loadingToast, {
+              render: `🔄 Inserting ${index + 1}/${values.length} values...`,
+            });
+          }
+        }, index * 1000); // 1 second delay between inserts
+      });
     } catch (error) {
       toast.error("❌ Invalid input format. Please enter numbers separated by commas.", {
         position: "top-right",
@@ -1029,28 +1520,19 @@ setIsPlaying(false);
         theme: "colored",
       });
     }
-  } else {
-    // For single operations
-    if (listOperation !== "traverse" && (!listValue || listValue === "")) {
-      toast.warning("⚠️ Please enter a value for the Linked List operation", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
+  };
 
+  const handleCreateGraphFromMatrix = (matrixString) => {
+    try {
+      const lines = matrixString.trim().split("\n");
+      const matrix = lines.map((line) =>
+        line.split(",").map((val) => parseInt(val.trim()))
+      );
 
-      // For single insert/delete, convert to number
-       let valueToSend = listValue;
-    if (listOperation !== "traverse") {
-      const numValue = parseInt(listValue);
-      if (isNaN(numValue)) {
-        toast.error("❌ Please enter a valid number", {
+      // Validate matrix
+      const size = matrix.length;
+      if (matrix.some((row) => row.length !== size)) {
+        toast.warning("📊 Matrix must be square (same number of rows and columns)", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -1061,99 +1543,57 @@ setIsPlaying(false);
         });
         return;
       }
-      valueToSend = numValue;
-    }
 
-    fetchAlgorithmSteps();
-  }
-};
+      // Validate matrix has at least 2 nodes
+      if (size < 2) {
+        toast.warning("📊 Graph must have at least 2 nodes", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
 
-  const handleHeapOperation = () => {
-  if (heapOperation !== "heapify" && heapValue === "") {
-    toast.warning("📚 Please enter a value for the Heap operation", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  fetchAlgorithmSteps();
-};
+      // Generate node labels (A, B, C, ...)
+      const nodes = Array.from({ length: size }, (_, i) =>
+        String.fromCharCode(65 + i)
+      );
 
-const handleTrieOperation = () => {
-  if (!trieWord) {
-    toast.warning("🔤 Please enter a word for the Trie operation", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  fetchAlgorithmSteps();
-};
+      // Create new graph from matrix
+      const newGraph = {};
 
-const handleStackOperation = () => {
-  if (
-    (stackOperation === "push" || stackOperation === "pushMultiple") &&
-    !stackValue
-  ) {
-    toast.warning("📚 Please enter a value for the stack operation", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  fetchAlgorithmSteps();
-};
+      // Initialize nodes
+      nodes.forEach((node) => {
+        newGraph[node] = {};
+      });
 
-const handleQueueOperation = () => {
-  if (queueOperation === "enqueue" && !queueValue) {
-    toast.warning("📥 Please enter a value for the queue operation", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  fetchAlgorithmSteps();
-};
+      // Add edges based on matrix
+      matrix.forEach((row, i) => {
+        row.forEach((weight, j) => {
+          if (weight > 0 && i !== j) {
+            const fromNode = nodes[i];
+            const toNode = nodes[j];
+            newGraph[fromNode][toNode] = weight;
+            // For undirected graph, add reverse edge
+            newGraph[toNode][fromNode] = weight;
+          }
+        });
+      });
 
-const handleBacktrackingOperation = () => {
-  // Validate N-Queens size
-  if (selectedAlgorithm === "n-queens" && (!nQueensSize || nQueensSize < 1)) {
-    toast.warning("♕ Please enter a valid board size for N-Queens", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-  
-  // Validate Sudoku grid
-  if (selectedAlgorithm === "sudoku-solver") {
-    if (!sudokuGrid || sudokuGrid.length === 0) {
-      toast.warning("🧩 Please provide a Sudoku grid to solve", {
+      setGraph(newGraph);
+      setShowMatrixInput(false);
+      setMatrixInput("");
+
+      // Count total edges
+      const totalEdges = Object.values(newGraph).reduce((count, edges) => {
+        return count + Object.keys(edges).length;
+      }, 0) / 2; // Divide by 2 for undirected graph
+
+      toast.success(`✅ Graph created successfully with ${size} nodes and ${totalEdges} edges!`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -1162,18 +1602,8 @@ const handleBacktrackingOperation = () => {
         draggable: true,
         theme: "colored",
       });
-      return;
-    }
-  }
-  
-  fetchAlgorithmSteps();
-};
-
-const handleGreedyOperation = () => {
-  // Validate Activity Selection
-  if (selectedAlgorithm === "activity-selection") {
-    if (!activities || activities.length === 0) {
-      toast.warning("📅 Please add activities for Activity Selection", {
+    } catch (error) {
+      toast.error("❌ Invalid matrix format. Please check your input.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -1182,263 +1612,76 @@ const handleGreedyOperation = () => {
         draggable: true,
         theme: "colored",
       });
-      return;
     }
-  }
-  
-  // Validate Fractional Knapsack
-  if (selectedAlgorithm === "fractional-knapsack") {
-    if (!knapsackItems || knapsackItems.length === 0) {
-      toast.warning("🎒 Please add items for Fractional Knapsack", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-    if (!knapsackCapacity || knapsackCapacity <= 0) {
-      toast.warning("⚖️ Please enter a valid capacity for Knapsack", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
-  
-  fetchAlgorithmSteps();
-};
-
-const handleDynamicProgrammingOperation = () => {
-  // Validate Fibonacci input
-  if (selectedAlgorithm === "fibonacci") {
-    if (!fibonacciN || fibonacciN < 0) {
-      toast.warning("🔢 Please enter a valid non-negative number for Fibonacci", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
-  
-  // Validate Knapsack DP
-  if (selectedAlgorithm === "knapsack-dp") {
-    if (!dpKnapsackItems || dpKnapsackItems.length === 0) {
-      toast.warning("💼 Please add items for 0/1 Knapsack", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-    if (!dpKnapsackCapacity || dpKnapsackCapacity <= 0) {
-      toast.warning("⚖️ Please enter a valid capacity for 0/1 Knapsack", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-  }
-  
-  fetchAlgorithmSteps();
-};
-
-const handleBulkListInsert = () => {
-  if (!listValue.trim()) {
-    toast.warning("🔗 Please enter values for bulk insertion", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-    return;
-  }
-
-  try {
-    const values = listValue
-      .split(",")
-      .map((v) => parseInt(v.trim()))
-      .filter((v) => !isNaN(v));
-
-    if (values.length === 0) {
-      toast.warning("🔢 Please enter valid numbers separated by commas", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-
-    // Show loading toast for bulk operation
-    const loadingToast = toast.loading(`🔄 Inserting ${values.length} values...`, {
-      position: "top-right",
-    });
-
-    // Insert values one by one with delays to show the process
-    values.forEach((value, index) => {
-      setTimeout(() => {
-        setListValue(value.toString());
-        fetchAlgorithmSteps();
-        
-        // Update toast on each insertion
-        if (index === values.length - 1) {
-          toast.update(loadingToast, {
-            render: `✅ Successfully inserted ${values.length} values!`,
-            type: "success",
-            isLoading: false,
-            autoClose: 3000,
-            hideProgressBar: false,
-          });
-        } else {
-          toast.update(loadingToast, {
-            render: `🔄 Inserting ${index + 1}/${values.length} values...`,
-          });
-        }
-      }, index * 1000); // 1 second delay between inserts
-    });
-  } catch (error) {
-    toast.error("❌ Invalid input format. Please enter numbers separated by commas.", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-};
-
-const handleCreateGraphFromMatrix = (matrixString) => {
-  try {
-    const lines = matrixString.trim().split("\n");
-    const matrix = lines.map((line) =>
-      line.split(",").map((val) => parseInt(val.trim()))
-    );
-
-    // Validate matrix
-    const size = matrix.length;
-    if (matrix.some((row) => row.length !== size)) {
-      toast.warning("📊 Matrix must be square (same number of rows and columns)", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-
-    // Validate matrix has at least 2 nodes
-    if (size < 2) {
-      toast.warning("📊 Graph must have at least 2 nodes", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      return;
-    }
-
-    // Generate node labels (A, B, C, ...)
-    const nodes = Array.from({ length: size }, (_, i) =>
-      String.fromCharCode(65 + i)
-    );
-
-    // Create new graph from matrix
-    const newGraph = {};
-
-    // Initialize nodes
-    nodes.forEach((node) => {
-      newGraph[node] = {};
-    });
-
-    // Add edges based on matrix
-    matrix.forEach((row, i) => {
-      row.forEach((weight, j) => {
-        if (weight > 0 && i !== j) {
-          const fromNode = nodes[i];
-          const toNode = nodes[j];
-          newGraph[fromNode][toNode] = weight;
-          // For undirected graph, add reverse edge
-          newGraph[toNode][fromNode] = weight;
-        }
-      });
-    });
-
-    setGraph(newGraph);
-    setShowMatrixInput(false);
-    setMatrixInput("");
-    
-    // Count total edges
-    const totalEdges = Object.values(newGraph).reduce((count, edges) => {
-      return count + Object.keys(edges).length;
-    }, 0) / 2; // Divide by 2 for undirected graph
-    
-    toast.success(`✅ Graph created successfully with ${size} nodes and ${totalEdges} edges!`, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  } catch (error) {
-    toast.error("❌ Invalid matrix format. Please check your input.", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }
-};
+  };
 
   // Get visualization component
+  // In AlgorithmPage.jsx, update the getVisualizationComponent function:
+
   const getVisualizationComponent = () => {
     const normalizedCategory =
       category === "arrays" ? "array-operations" : category;
-    const currentStepData = algorithmData.steps[currentStep] || {
-      array: array,
-      currentIndex: -1,
-    };
+
+    // Safely get current step data with multiple null checks
+    let currentStepData = { array: array, currentIndex: -1 };
+
+    if (algorithmData?.steps &&
+      Array.isArray(algorithmData.steps) &&
+      algorithmData.steps.length > 0 &&
+      currentStep >= 0 &&
+      currentStep < algorithmData.steps.length) {
+      currentStepData = algorithmData.steps[currentStep] || currentStepData;
+
+      // For linked list, ensure we have nodes
+      if (normalizedCategory === "linked-list") {
+        console.log('Linked List step data before processing:', currentStepData);
+
+        // If step doesn't have nodes but we have a list in algorithmData, create nodes
+        if (!currentStepData.nodes && algorithmData.list) {
+          const convertToList = (head) => {
+            const result = [];
+            let current = head;
+            while (current) {
+              result.push({
+                value: current.value,
+                visited: false
+              });
+              current = current.next;
+            }
+            return result;
+          };
+
+          const nodes = convertToList(algorithmData.list);
+          currentStepData.nodes = nodes;
+          console.log('Created nodes from list:', nodes);
+        }
+
+        // If step has path but no currentNode, set it from path
+        if (currentStepData.path && currentStepData.path.length > 0 && !currentStepData.currentNode) {
+          currentStepData.currentNode = currentStepData.path[currentStepData.path.length - 1];
+        }
+      }
+    } else if (normalizedCategory === "linked-list" && algorithmData?.list) {
+      // If no steps but we have a list, create a default step
+      const convertToList = (head) => {
+        const result = [];
+        let current = head;
+        while (current) {
+          result.push({ value: current.value });
+          current = current.next;
+        }
+        return result;
+      };
+
+      const nodes = convertToList(algorithmData.list);
+      currentStepData = {
+        nodes: nodes,
+        currentNode: null,
+        action: 'idle',
+        message: 'List ready for operations'
+      };
+      console.log('Created default step from list:', currentStepData);
+    }
 
     switch (normalizedCategory) {
       case "array-operations":
@@ -1456,34 +1699,63 @@ const handleCreateGraphFromMatrix = (matrixString) => {
               step={currentStepData}
               algorithm={selectedAlgorithm}
             />
-            <LineChart array={currentStepData.array || array} />
+            <LineChart
+              array={currentStepData?.array || array}
+            />
           </div>
         );
 
       case "trees":
         return (
-          <BSTViewer step={currentStepData} algorithm={selectedAlgorithm} />
+          <BSTViewer
+            step={currentStepData}
+            algorithm={selectedAlgorithm}
+          />
         );
 
       case "graphs":
         return (
-          <GraphViewer step={currentStepData} algorithm={selectedAlgorithm} />
+          <GraphViewer
+            step={currentStepData}
+            algorithm={selectedAlgorithm}
+          />
         );
 
       case "linked-list":
-        return <LinkedListViewer step={currentStepData} />;
+        console.log('Rendering LinkedListViewer with step:', currentStepData);
+        return (
+          <LinkedListViewer
+            step={currentStepData}
+          />
+        );
 
       case "heap":
-        return <HeapViewer step={currentStepData} />;
+        return (
+          <HeapViewer
+            step={currentStepData}
+          />
+        );
 
       case "trie":
-        return <TrieViewer step={currentStepData} />;
+        return (
+          <TrieViewer
+            step={currentStepData}
+          />
+        );
 
       case "stack":
-        return <StackVisualizer step={currentStepData} />;
+        return (
+          <StackVisualizer
+            step={currentStepData}
+          />
+        );
 
       case "queue":
-        return <QueueVisualizer step={currentStepData} />;
+        return (
+          <QueueVisualizer
+            step={currentStepData}
+          />
+        );
 
       case "backtracking":
         return (
@@ -1495,7 +1767,10 @@ const handleCreateGraphFromMatrix = (matrixString) => {
 
       case "greedy":
         return (
-          <GreedyViewer step={currentStepData} algorithm={selectedAlgorithm} />
+          <GreedyViewer
+            step={currentStepData}
+            algorithm={selectedAlgorithm}
+          />
         );
 
       case "dynamic-programming":
@@ -1507,7 +1782,7 @@ const handleCreateGraphFromMatrix = (matrixString) => {
         );
 
       default:
-        return <div>Select an algorithm to visualize</div>;
+        return <div className="no-algorithm-selected">Select an algorithm to visualize</div>;
     }
   };
 
@@ -1582,26 +1857,26 @@ const handleCreateGraphFromMatrix = (matrixString) => {
 
             {(selectedAlgorithm === "insert" ||
               selectedAlgorithm === "update") && (
-              <input
-                type="number"
-                value={arrayPosition}
-                onChange={(e) => setArrayPosition(e.target.value)}
-                placeholder="Position"
-                min="0"
-              />
-            )}
+                <input
+                  type="number"
+                  value={arrayPosition}
+                  onChange={(e) => setArrayPosition(e.target.value)}
+                  placeholder="Position"
+                  min="0"
+                />
+              )}
 
             {(selectedAlgorithm === "insert" ||
               selectedAlgorithm === "push" ||
               selectedAlgorithm === "update" ||
               selectedAlgorithm === "search") && (
-              <input
-                type="number"
-                value={arrayValue}
-                onChange={(e) => setArrayValue(e.target.value)}
-                placeholder="Value"
-              />
-            )}
+                <input
+                  type="number"
+                  value={arrayValue}
+                  onChange={(e) => setArrayValue(e.target.value)}
+                  placeholder="Value"
+                />
+              )}
 
             {selectedAlgorithm === "rotate" && (
               <>
@@ -1969,44 +2244,44 @@ const handleCreateGraphFromMatrix = (matrixString) => {
 
             {(selectedAlgorithm === "push-operation" ||
               selectedAlgorithm === "stack-operations") && (
-              <>
-                <select
-                  value={stackOperation}
-                  onChange={(e) => setStackOperation(e.target.value)}
-                >
-                  <option value="push">Push</option>
-                  <option value="pop">Pop</option>
-                  <option value="peek">Peek</option>
-                  <option value="isEmpty">Is Empty</option>
-                  <option value="size">Size</option>
-                  <option value="pushMultiple">Push Multiple</option>
-                </select>
+                <>
+                  <select
+                    value={stackOperation}
+                    onChange={(e) => setStackOperation(e.target.value)}
+                  >
+                    <option value="push">Push</option>
+                    <option value="pop">Pop</option>
+                    <option value="peek">Peek</option>
+                    <option value="isEmpty">Is Empty</option>
+                    <option value="size">Size</option>
+                    <option value="pushMultiple">Push Multiple</option>
+                  </select>
 
-                {(stackOperation === "push" ||
-                  stackOperation === "pushMultiple") && (
-                  <input
-                    type="text"
-                    value={
-                      stackOperation === "pushMultiple"
-                        ? stackValues
-                        : stackValue
-                    }
-                    onChange={(e) => {
-                      if (stackOperation === "pushMultiple") {
-                        setStackValues(e.target.value);
-                      } else {
-                        setStackValue(e.target.value);
-                      }
-                    }}
-                    placeholder={
-                      stackOperation === "pushMultiple"
-                        ? "Values (comma separated)"
-                        : "Enter value"
-                    }
-                  />
-                )}
-              </>
-            )}
+                  {(stackOperation === "push" ||
+                    stackOperation === "pushMultiple") && (
+                      <input
+                        type="text"
+                        value={
+                          stackOperation === "pushMultiple"
+                            ? stackValues
+                            : stackValue
+                        }
+                        onChange={(e) => {
+                          if (stackOperation === "pushMultiple") {
+                            setStackValues(e.target.value);
+                          } else {
+                            setStackValue(e.target.value);
+                          }
+                        }}
+                        placeholder={
+                          stackOperation === "pushMultiple"
+                            ? "Values (comma separated)"
+                            : "Enter value"
+                        }
+                      />
+                    )}
+                </>
+              )}
 
             <button onClick={handleRunAlgorithm} disabled={isLoading}>
               Run{" "}
@@ -2031,27 +2306,27 @@ const handleCreateGraphFromMatrix = (matrixString) => {
 
             {(selectedAlgorithm === "enqueue-operation" ||
               selectedAlgorithm === "queue-operations") && (
-              <>
-                <select
-                  value={queueOperation}
-                  onChange={(e) => setQueueOperation(e.target.value)}
-                >
-                  <option value="enqueue">Enqueue</option>
-                  <option value="dequeue">Dequeue</option>
-                  <option value="peek">Peek</option>
-                  <option value="isEmpty">Is Empty</option>
-                </select>
+                <>
+                  <select
+                    value={queueOperation}
+                    onChange={(e) => setQueueOperation(e.target.value)}
+                  >
+                    <option value="enqueue">Enqueue</option>
+                    <option value="dequeue">Dequeue</option>
+                    <option value="peek">Peek</option>
+                    <option value="isEmpty">Is Empty</option>
+                  </select>
 
-                {queueOperation === "enqueue" && (
-                  <input
-                    type="text"
-                    value={queueValue}
-                    onChange={(e) => setQueueValue(e.target.value)}
-                    placeholder="Enter value"
-                  />
-                )}
-              </>
-            )}
+                  {queueOperation === "enqueue" && (
+                    <input
+                      type="text"
+                      value={queueValue}
+                      onChange={(e) => setQueueValue(e.target.value)}
+                      placeholder="Enter value"
+                    />
+                  )}
+                </>
+              )}
 
             <button onClick={handleRunAlgorithm} disabled={isLoading}>
               Run{" "}
@@ -2233,38 +2508,38 @@ const handleCreateGraphFromMatrix = (matrixString) => {
     }
   };
 
- return (
-  <>
-    {category === "algorithm-compare" ? (
-      <div className="algorithm-compare-page">
-        <AlgorithmCompare />
-      </div>
-    ) : category === "complexity-analysis" ? (
-      <ComplexityAnalysis />
-    ) : (
-      <div className="algorithm-page">
-        {/* Improved Header Section */}
-        <div className="algorithm-header">
-          <div className="header-left">
-            {/* <button 
+  return (
+    <>
+      {category === "algorithm-compare" ? (
+        <div className="algorithm-compare-page">
+          <AlgorithmCompare />
+        </div>
+      ) : category === "complexity-analysis" ? (
+        <ComplexityAnalysis />
+      ) : (
+        <div className="algorithm-page">
+          {/* Improved Header Section */}
+          <div className="algorithm-header">
+            <div className="header-left">
+              {/* <button 
               onClick={toggleSidebar}
               className="sidebar-toggle"
               aria-label="Toggle sidebar"
             >
               {isSidebarOpen ? '✕' : '☰'}
             </button> */}
-            <h2>{selectedAlgorithm.replace(/-/g, ' ').toUpperCase()} Visualization</h2>
+              <h2>{selectedAlgorithm.replace(/-/g, ' ').toUpperCase()} Visualization</h2>
+            </div>
+            <div className="header-right">
+              <Link to="/home" className="nav-button">
+                ← Back to Home
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
-          <div className="header-right">
-            <Link to="/home" className="nav-button">
-              ← Back to Home
-            </Link>
-            <ThemeToggle />
-          </div>
-        </div>
 
-        <div className="algorithm-layout">
-          {/* <Sidebar
+          <div className="algorithm-layout">
+            {/* <Sidebar
             category={category}
             selectedAlgorithm={selectedAlgorithm}
             onSelectAlgorithm={handleSelectAlgorithm}
@@ -2272,109 +2547,128 @@ const handleCreateGraphFromMatrix = (matrixString) => {
             toggleSidebar={toggleSidebar}
           /> */}
 
-          <div className="visualization-area">
-            {/* TOP ROW: Controls and Explanation Side by Side */}
-            <div className="top-content-area">
-              {/* Controls Panel */}
-              <div className="controls-panel">
-                <h3>Algorithm Controls</h3>
-                <div className="control-group">
-                  {renderCategoryControls()}
+            <div className="visualization-area">
+              {/* TOP ROW: Controls and Explanation Side by Side */}
+              <div className="top-content-area">
+                {/* Controls Panel */}
+                <div className="controls-panel">
+                  <h3>Algorithm Controls</h3>
+                  <div className="control-group">
+                    {renderCategoryControls()}
 
-                  {/* Common Controls */}
-                  <button
-                    onClick={handlePlayPause}
-                    disabled={algorithmData.steps.length === 0 || isLoading}
-                    className="play-pause-btn"
-                  >
-                    {isPlaying ? "⏸️ Pause" : "▶️ Play"}
-                  </button>
-                  <button onClick={resetAnimation} className="reset-btn">
-                    🔄 Reset
-                  </button>
+                    {/* Common Controls */}
+                    <button
+                      onClick={handlePlayPause}
+                      disabled={!algorithmData?.steps || algorithmData.steps.length === 0 || isLoading}
+                      className="play-pause-btn"
+                    >
+                      {isPlaying ? "⏸️ Pause" : "▶️ Play"}
+                    </button>
+                    <button onClick={resetAnimation} className="reset-btn">
+                      🔄 Reset
+                    </button>
+                  </div>
+                </div>
+
+                {/* Explanation Panel */}
+                <div className="explanation-panel">
+                  <h3>Step Explanation</h3>
+                  <div className="explanation-content">
+                    {aiExplanation ||
+                      'Click "Run Algorithm" to start visualization.'}
+                  </div>
                 </div>
               </div>
 
-              {/* Explanation Panel */}
-              <div className="explanation-panel">
-                <h3>Step Explanation</h3>
-                <div className="explanation-content">
-                  {aiExplanation ||
-                    'Click "Run Algorithm" to start visualization.'}
+              <div className="main-content-area">
+                {/* Visualization Panel */}
+                <div className="visualization-panel">
+                  <h3>Visualization</h3>
+                  <div className="visualization-container">
+                    {(algorithmData?.steps &&
+                      Array.isArray(algorithmData.steps) &&
+                      algorithmData.steps.length > 0) ||
+                      (category === "linked-list" && linkedList && linkedList !== null) ? (
+                      getVisualizationComponent()
+                    ) : (
+                      <div className="no-visualization">
+                        <p>No visualization data available</p>
+                        <small>Select an algorithm and click Run to start</small>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pseudocode Panel */}
+                <div className="pseudocode-panel">
+                  <h3>Pseudo Code</h3>
+                  <SortingViewer
+                    code={algorithmData?.pseudocode || []}
+                    currentLine={
+                      algorithmData?.steps &&
+                        Array.isArray(algorithmData.steps) &&
+                        algorithmData.steps.length > 0 &&
+                        currentStep >= 0 &&
+                        currentStep < algorithmData.steps.length &&
+                        algorithmData.steps[currentStep] &&
+                        algorithmData.steps[currentStep].currentLine !== undefined
+                        ? algorithmData.steps[currentStep].currentLine
+                        : -1
+                    }
+                    algorithm={selectedAlgorithm}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* MIDDLE ROW: Visualization and Pseudocode Side by Side */}
-            <div className="main-content-area">
-              {/* Visualization Panel */}
-              <div className="visualization-panel">
-                <h3>Visualization</h3>
-                <div className="visualization-container">
-                  {getVisualizationComponent()}
-                </div>
+              {/* BOTTOM: Control Buttons and Custom Input */}
+              {/* BOTTOM: Control Buttons and Custom Input */}
+              <div className="bottom-content-area">
+                {/* Control Buttons with null check */}
+                {algorithmData?.steps &&
+                  Array.isArray(algorithmData.steps) &&
+                  algorithmData.steps.length > 0 && (
+                    <ControlButtons
+                      onStepBackward={handleStepBackward}
+                      onStepForward={handleStepForward}
+                      currentStep={currentStep}
+                      totalSteps={algorithmData.steps.length}
+                      setCurrentStep={setCurrentStep}
+                    />
+                  )}
+
+                {/* Custom Array Input for Sorting/Array Operations */}
+                {(category === "sorting" || category === "array-operations") && (
+                  <CustomArrayInput onSubmit={handleCustomArray} />
+                )}
               </div>
-
-              {/* Pseudocode Panel */}
-              <div className="pseudocode-panel">
-                <h3>Pseudo Code</h3>
-                <SortingViewer
-                  code={algorithmData.pseudocode}
-                  currentLine={
-                    algorithmData.steps[currentStep]?.currentLine || -1
-                  }
-                  algorithm={selectedAlgorithm}
-                />
-              </div>
-            </div>
-
-            {/* BOTTOM: Control Buttons and Custom Input */}
-            <div className="bottom-content-area">
-              {/* Control Buttons */}
-              {algorithmData.steps.length > 0 && (
-                <ControlButtons
-                  onStepBackward={handleStepBackward}
-                  onStepForward={handleStepForward}
-                  currentStep={currentStep}
-                  totalSteps={algorithmData.steps.length}
-                  setCurrentStep={setCurrentStep}
-                />
-              )}
-
-              {/* Custom Array Input for Sorting/Array Operations */}
-              {(category === "sorting" ||
-                category === "array-operations") && (
-                <CustomArrayInput onSubmit={handleCustomArray} />
-              )}
             </div>
           </div>
-        </div>
 
-        {/* React Toastify Container for Beautiful Notifications */}
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          style={{
-            fontSize: '14px',
-            zIndex: 9999,
-          }}
-          toastStyle={{
-            borderRadius: '8px',
-            fontWeight: '500',
-          }}
-        />
-      </div>
-    )}
-  </>
-);
+          {/* React Toastify Container for Beautiful Notifications */}
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+            style={{
+              fontSize: '14px',
+              zIndex: 9999,
+            }}
+            toastStyle={{
+              borderRadius: '8px',
+              fontWeight: '500',
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
 };
 
 export default AlgorithmPage;

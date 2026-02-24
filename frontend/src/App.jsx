@@ -16,6 +16,9 @@ import AuthModal from './components/AuthModal';
 import { useAuth } from './contexts/AuthContext';
 import UserProfile from './components/UserProfile';
 
+import AICodeVisualizer from './components/AICodeVisualizer';
+import AIDebugger from './components/AIDebugger';
+
 
 // Inner App component that uses auth
 const AppContent = () => {
@@ -36,6 +39,8 @@ const AppContent = () => {
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/ai-code-visualizer" element={<AICodeVisualizer />} />
+            <Route path="/ai-debugger" element={<AIDebugger />} />
           </Routes>
         </div>
       </Router>

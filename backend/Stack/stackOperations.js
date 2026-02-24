@@ -1,7 +1,7 @@
 // backend/stackOperations.js
 class Stack {
-  constructor() {
-    this.items = [];
+  constructor(initialItems = []) {
+    this.items = [...initialItems]; // Initialize with existing stack items
     this.steps = [];
   }
 
@@ -39,7 +39,6 @@ class Stack {
     return this.steps;
   }
 
-  // Update pop method:
   pop() {
     this.steps = [];
 
@@ -91,6 +90,7 @@ class Stack {
       stack: [...this.items],
       action: "start",
       message: "Peeking at the top of the stack",
+      highlightIndex: this.items.length - 1,
     });
 
     if (this.isEmpty()) {
@@ -98,6 +98,7 @@ class Stack {
         stack: [...this.items],
         action: "error",
         message: "Stack is empty",
+        highlightIndex: -1,
       });
       return this.steps;
     }
@@ -109,6 +110,7 @@ class Stack {
       action: "peek",
       value,
       message: `Top element is ${value}`,
+      highlightIndex: this.items.length - 1,
     });
 
     return this.steps;
@@ -517,7 +519,14 @@ class Stack {
 }
 
 const stackOperations = (operation, ...args) => {
-  const stack = new Stack();
+  // Extract the stackState from args (it's the last argument)
+  const stackState = args[args.length - 1] || [];
+  const value = args[0];
+  
+  console.log(`Stack operation: ${operation}`, { value, stackState });
+
+  // Create stack with existing state
+  const stack = new Stack(stackState);
 
   const pseudocode = {
     push: ["add element to top of stack", "increment stack pointer"],
@@ -571,30 +580,44 @@ const stackOperations = (operation, ...args) => {
   };
 
   let steps;
-  switch (operation) {
-    case "push":
-      steps = stack.push(args[0]);
-      break;
-    case "pop":
-      steps = stack.pop();
-      break;
-    case "peek":
-      steps = stack.peek();
-      break;
-    case "infixToPostfix":
-      steps = stack.infixToPostfix(args[0]);
-      break;
-    case "checkParentheses":
-      steps = stack.checkParentheses(args[0]);
-      break;
-    case "evaluatePostfix":
-      steps = stack.evaluatePostfix(args[0]);
-      break;
-    default:
-      return { steps: [], pseudocode: [], error: "Invalid operation" };
-  }
+  try {
+    switch (operation) {
+      case "push":
+        steps = stack.push(value);
+        break;
+      case "pop":
+        steps = stack.pop();
+        break;
+      case "peek":
+        steps = stack.peek();
+        break;
+      case "infixToPostfix":
+        steps = stack.infixToPostfix(value);
+        break;
+      case "checkParentheses":
+        steps = stack.checkParentheses(value);
+        break;
+      case "evaluatePostfix":
+        steps = stack.evaluatePostfix(value);
+        break;
+      default:
+        return { steps: [], pseudocode: [], error: "Invalid operation", stack: [] };
+    }
 
-  return { steps, pseudocode: pseudocode[operation], stack: stack.items };
+    return { 
+      steps, 
+      pseudocode: pseudocode[operation] || [], 
+      stack: stack.items 
+    };
+  } catch (error) {
+    console.error(`Error in stack operation ${operation}:`, error);
+    return { 
+      steps: [], 
+      pseudocode: [], 
+      error: error.message,
+      stack: stack.items 
+    };
+  }
 };
 
 module.exports = stackOperations;
