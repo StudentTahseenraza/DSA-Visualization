@@ -1,3 +1,5 @@
+// controllers/arrayController.js - Updated to return result
+
 const { arrayOperations } = require("../index");
 
 exports.handleArrayOperation = (req, res) => {
@@ -30,6 +32,15 @@ exports.handleArrayOperation = (req, res) => {
         }
         result = arrayOperations('delete', currentArray, parseInt(position));
         break;
+      case "push":
+        if (value === undefined) {
+          return res.status(400).json({ error: "Value is required for push operation" });
+        }
+        result = arrayOperations('push', currentArray, parseInt(value));
+        break;
+      case "pop":
+        result = arrayOperations('pop', currentArray);
+        break;
       case "search":
         if (value === undefined) {
           return res.status(400).json({ error: "Value is required for search operation" });
@@ -54,15 +65,6 @@ exports.handleArrayOperation = (req, res) => {
       case "reverse":
         result = arrayOperations('reverse', currentArray);
         break;
-      case "push":
-        if (value === undefined) {
-          return res.status(400).json({ error: "Value is required for push operation" });
-        }
-        result = arrayOperations('insert', currentArray, parseInt(value), currentArray.length);
-        break;
-      case "pop":
-        result = arrayOperations('delete', currentArray, currentArray.length - 1);
-        break;
       default:
         return res.status(400).json({ error: `Invalid array operation: ${operation}` });
     }
@@ -70,15 +72,43 @@ exports.handleArrayOperation = (req, res) => {
     console.log('Operation result:', {
       stepsLength: result.steps ? result.steps.length : 0,
       hasPseudocode: !!result.pseudocode,
-      arrayLength: result.array ? result.array.length : 0
+      arrayLength: result.array ? result.array.length : 0,
+      hasResult: !!result.result
     });
 
-    res.json({
+    // Create a comprehensive response with result data
+    const responseData = {
       steps: result.steps || [],
       pseudocode: result.pseudocode || [],
       array: result.array || currentArray,
       explanations: (result.steps || []).map((step) => step.message || 'Step completed'),
-    });
+      result: result.result || {
+        success: true,
+        operation: operation,
+        message: `${operation} operation completed successfully`
+      }
+    };
+
+    // Add operation-specific result details
+    if (operation === 'delete' && position !== undefined) {
+      responseData.result.deletedValue = result.result?.deletedValue;
+      responseData.result.position = parseInt(position);
+    }
+    if (operation === 'insert' && value !== undefined && position !== undefined) {
+      responseData.result.insertedValue = parseInt(value);
+      responseData.result.position = parseInt(position);
+    }
+    if (operation === 'push' && value !== undefined) {
+      responseData.result.pushedValue = parseInt(value);
+    }
+    if (operation === 'pop') {
+      responseData.result.poppedValue = result.result?.poppedValue;
+    }
+    if (operation === 'search' && value !== undefined) {
+      responseData.result.searchedValue = parseInt(value);
+    }
+
+    res.json(responseData);
 
   } catch (error) {
     console.error(`Error in /api/array/${operation}:`, error);

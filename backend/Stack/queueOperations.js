@@ -7,7 +7,7 @@ class Queue {
 
   enqueue(value) {
     this.steps = [];
-    
+
     // Step 1: Show current queue before enqueue
     this.steps.push({
       queue: [...this.items],
@@ -27,7 +27,7 @@ class Queue {
 
     // Step 3: Add to queue
     this.items.push(value);
-    
+
     this.steps.push({
       queue: [...this.items],
       action: "enqueue",
@@ -41,7 +41,7 @@ class Queue {
 
   dequeue() {
     this.steps = [];
-    
+
     // Step 1: Show current queue before dequeue
     this.steps.push({
       queue: [...this.items],
@@ -72,7 +72,7 @@ class Queue {
 
     // Step 3: Remove from queue
     this.items.shift();
-    
+
     this.steps.push({
       queue: [...this.items],
       action: "dequeue",
@@ -104,7 +104,7 @@ class Queue {
     }
 
     const value = this.items[0];
-    
+
     this.steps.push({
       queue: [...this.items],
       action: "front",
@@ -140,7 +140,7 @@ class Queue {
       graph: JSON.parse(JSON.stringify(graph)),
       start,
       queue: [...queue],
-      visited: {...visited},
+      visited: { ...visited },
       result: [...result],
       action: 'init',
       message: `Initialized with start node ${start}`
@@ -149,12 +149,12 @@ class Queue {
     while (queue.length > 0) {
       const node = queue.shift();
       result.push(node);
-      
+
       this.steps.push({
         graph: JSON.parse(JSON.stringify(graph)),
         currentNode: node,
         queue: [...queue],
-        visited: {...visited},
+        visited: { ...visited },
         result: [...result],
         action: 'process',
         message: `Processing node ${node}, adding to result`
@@ -166,7 +166,7 @@ class Queue {
           currentNode: node,
           neighbor,
           queue: [...queue],
-          visited: {...visited},
+          visited: { ...visited },
           result: [...result],
           action: 'check-neighbor',
           message: `Checking neighbor ${neighbor} of node ${node}`
@@ -175,13 +175,13 @@ class Queue {
         if (!visited[neighbor]) {
           visited[neighbor] = true;
           queue.push(neighbor);
-          
+
           this.steps.push({
             graph: JSON.parse(JSON.stringify(graph)),
             currentNode: node,
             neighbor,
             queue: [...queue],
-            visited: {...visited},
+            visited: { ...visited },
             result: [...result],
             action: 'enqueue-neighbor',
             message: `Neighbor ${neighbor} not visited, adding to queue`
@@ -192,7 +192,7 @@ class Queue {
             currentNode: node,
             neighbor,
             queue: [...queue],
-            visited: {...visited},
+            visited: { ...visited },
             result: [...result],
             action: 'skip-neighbor',
             message: `Neighbor ${neighbor} already visited, skipping`
@@ -223,7 +223,7 @@ class Queue {
 
     const result = [];
     const queue = ['1'];
-    
+
     this.steps.push({
       n,
       queue: [...queue],
@@ -235,7 +235,7 @@ class Queue {
     for (let i = 0; i < n; i++) {
       const binary = queue.shift();
       result.push(binary);
-      
+
       this.steps.push({
         n,
         i,
@@ -248,7 +248,7 @@ class Queue {
 
       queue.push(binary + '0');
       queue.push(binary + '1');
-      
+
       this.steps.push({
         n,
         i,
@@ -284,7 +284,7 @@ class Queue {
     let start = 0;
     let end = 1;
     let currPetrol = petrol[start] - distance[start];
-    
+
     this.steps.push({
       petrol,
       distance,
@@ -319,7 +319,7 @@ class Queue {
 
         currPetrol -= petrol[start] - distance[start];
         start = (start + 1) % n;
-        
+
         this.steps.push({
           petrol,
           distance,
@@ -344,7 +344,7 @@ class Queue {
 
       currPetrol += petrol[end] - distance[end];
       end = (end + 1) % n;
-      
+
       this.steps.push({
         petrol,
         distance,
@@ -372,7 +372,7 @@ class Queue {
 const queueOperations = (operation, ...args) => {
   const queueState = args[args.length - 1] || [];
   const value = args[0];
-  
+
   console.log(`Queue operation: ${operation}`, { value, queueState });
 
   const queue = new Queue(queueState);
@@ -449,18 +449,20 @@ const queueOperations = (operation, ...args) => {
         return { steps: [], pseudocode: [], error: 'Invalid operation', queue: [] };
     }
 
-    return { 
-      steps, 
-      pseudocode: pseudocode[operation] || [], 
-      queue: queue.items 
+    return {
+      steps,
+      pseudocode: pseudocode[operation] || [],
+      explanations: steps.map(step => step.message), // ✅ ADD THIS
+      queue: queue.items
     };
   } catch (error) {
     console.error(`Error in queue operation ${operation}:`, error);
-    return { 
-      steps: [], 
-      pseudocode: [], 
+    return {
+      steps: [],
+      pseudocode: [],
+      explanations: [error.message], // ✅ ADD
       error: error.message,
-      queue: queue.items 
+      queue: queue.items
     };
   }
 };

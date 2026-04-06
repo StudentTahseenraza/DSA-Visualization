@@ -39,6 +39,8 @@ import StringResultPanel from "./StringResultPanel";
 import SortingResultPanel from "./SortingResultPanel";
 import BSTResultPanel from "./BSTResultPanel";
 
+import ArrayResultPanel from "./ArrayResultPanel";
+
 
 
 const AlgorithmPage = () => {
@@ -63,6 +65,9 @@ const AlgorithmPage = () => {
   const [arrayPosition, setArrayPosition] = useState("");
   const [arrayDirection, setArrayDirection] = useState("left");
   const [arrayPositions, setArrayPositions] = useState(1);
+
+  const [showArrayResultPanel, setShowArrayResultPanel] = useState(false);
+  const [arrayOperationResult, setArrayOperationResult] = useState(null);
 
   // Add to states (around line 50-60)
   const [stringOperation, setStringOperation] = useState("reverse");
@@ -210,8 +215,8 @@ const AlgorithmPage = () => {
   // const { isDarkMode } = useTheme();
 
 
-  // const BASE_URL = "http://localhost:5000/api";
-  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
 
 
   // Set default algorithm based on category
@@ -268,6 +273,38 @@ const AlgorithmPage = () => {
           position: arrayPosition,
           direction: arrayDirection,
           positions: arrayPositions,
+        });
+
+        console.log('Array operation response:', response.data);
+
+        // Store result info for Array result panel
+        setArrayOperationResult({
+          operation: selectedAlgorithm,
+          value: arrayValue,
+          position: arrayPosition,
+          direction: arrayDirection,
+          positions: arrayPositions,
+          finalArray: response.data.array,
+          steps: response.data.steps,
+          found: response.data.steps?.some(s => s.action === 'found'),
+          success: true
+        });
+
+        setAlgorithmData({
+          steps: response.data.steps || [],
+          pseudocode: response.data.pseudocode || [],
+          explanations: response.data.explanations || []
+        });
+
+        setCurrentStep(0);
+        setIsPlaying(false);
+        setShowArrayResultPanel(false);
+
+        // Success toast
+        toast.success(`✅ ${selectedAlgorithm} operation loaded! Click Play to start animation.`, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
         });
       } else if (category === "sorting") {
         response = await axios.post(`${BASE_URL}/sort/${selectedAlgorithm}`, {
@@ -620,39 +657,61 @@ const AlgorithmPage = () => {
         });
 
       } else if (category === "stack") {
-        response = await axios.post(`${BASE_URL}/stack/${stackOperation}`, {
-          value: stackOperation === "pushMultiple" ? stackValues : stackValue,
-          stackState: stack,
-        });
-        setStack(response.data.stack);
+        try {
+          const res = await axios.post(`${BASE_URL}/stack/${stackOperation}`, {
+            value: stackOperation === "pushMultiple" ? stackValues : stackValue,
+            stackState: stack,
+          });
 
-        toast.success(`📚 Stack ${stackOperation} operation successful`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
+          console.log("STACK RESPONSE:", res);
 
+          const data = res?.data;
+
+          if (!data) throw new Error("No data from stack API");
+
+          setStack(data.stack || []);
+
+          setAlgorithmData({
+            steps: data.steps || [],
+            pseudocode: data.pseudocode || [],
+            explanations: data.explanations || [],
+          });
+
+          setCurrentStep(0);
+          setIsPlaying(false);
+
+        } catch (err) {
+          console.error("STACK ERROR:", err);
+          toast.error("Stack operation failed");
+        }
       } else if (category === "queue") {
-        response = await axios.post(`${BASE_URL}/queue/${queueOperation}`, {
-          value: queueValue,
-          queueState: queue,
-        });
-        setQueue(response.data.queue);
+        try {
+          const res = await axios.post(`${BASE_URL}/queue/${queueOperation}`, {
+            value: queueValue,
+            queueState: queue,
+          });
 
-        toast.success(`📥 Queue ${queueOperation} operation successful`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
+          console.log("QUEUE RESPONSE:", res);
 
+          const data = res?.data;
+
+          if (!data) throw new Error("No data from queue API");
+
+          setQueue(data.queue || []);
+
+          setAlgorithmData({
+            steps: data.steps || [],
+            pseudocode: data.pseudocode || [],
+            explanations: data.explanations || [],
+          });
+
+          setCurrentStep(0);
+          setIsPlaying(false);
+
+        } catch (err) {
+          console.error("QUEUE ERROR:", err);
+          toast.error("Queue operation failed");
+        }
       } else if (category === "backtracking") {
         if (selectedAlgorithm === "n-queens") {
           response = await axios.post(`${BASE_URL}/backtracking/n-queens`, {
@@ -1104,8 +1163,19 @@ const AlgorithmPage = () => {
 
       } // End of dynamic-programming category
 
+
       // For non-tree operations, update algorithm data
-      if (category !== "trees" && category !== "dynamic-programming") {
+      if (
+        category !== "trees" &&
+        category !== "dynamic-programming" &&
+        category !== "stack" &&
+        category !== "queue"
+      ) {
+        if (!response || !response.data) {
+          console.error("Invalid API response");
+          return;
+        }
+
         setAlgorithmData(response.data);
         setCurrentStep(0);
         setIsPlaying(false);
@@ -1306,19 +1376,9 @@ const AlgorithmPage = () => {
     const animationSpeed = speed;
 
     if (isPlaying) {
-      // Check if we're at the last step
       if (currentStep >= algorithmData.steps.length - 1) {
         setIsPlaying(false);
-        // Show result panel for sorting when animation completes
-        if (category === "sorting") {
-          setShowSortingResultPanel(true);
-          toast.info("✅ Sorting complete! Check the results below.", {
-            position: "top-right",
-            autoClose: 3000,
-            theme: "colored",
-          });
-        }
-        // Show result panel for strings when animation completes
+        // Show result panel when animation completes
         if (category === "strings") {
           setShowResultPanel(true);
           toast.info("✅ Animation complete! Check the results below.", {
@@ -1327,7 +1387,14 @@ const AlgorithmPage = () => {
             theme: "colored",
           });
         }
-
+        if (category === "sorting") {
+          setShowSortingResultPanel(true);
+          toast.info("✅ Sorting complete! Check the results below.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
         if (category === "trees") {
           setShowBSTResultPanel(true);
           toast.info("🌳 BST operation complete! Check the results below.", {
@@ -1336,7 +1403,15 @@ const AlgorithmPage = () => {
             theme: "colored",
           });
         }
-
+        // ADD THIS BLOCK FOR ARRAYS
+        if (category === "arrays" && algorithmData?.steps?.length > 0) {
+          setShowArrayResultPanel(true);
+          toast.info("✅ Array operation complete! Check the results below.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
         return;
       }
 
@@ -2744,12 +2819,50 @@ const AlgorithmPage = () => {
             )}
 
             <button onClick={generateRandomArray} disabled={isLoading}>
-              Generate Random Array
+              🎲 Generate Random Array
             </button>
 
-            {/* ADD THE RUN BUTTON */}
+            {/* CUSTOM ARRAY INPUT - Positioned between Generate Random and Run buttons */}
+            <div className="custom-array-input-container">
+              <input
+                type="text"
+                id="custom-array-input"
+                placeholder="e.g., 5,2,8,1,4,3,6,7"
+                className="custom-array-field"
+              />
+              <button
+                onClick={() => {
+                  const input = document.getElementById('custom-array-input');
+                  if (input && input.value.trim()) {
+                    const values = input.value.split(',').map(v => parseInt(v.trim()));
+                    if (values.some(isNaN)) {
+                      toast.error("❌ Please enter valid numbers separated by commas", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        theme: "colored",
+                      });
+                      return;
+                    }
+                    setArray(values);
+                    resetAnimation();
+                    setAlgorithmData({ steps: [], pseudocode: [], explanations: [] });
+                    setShowArrayResultPanel(false);
+                    input.value = '';
+                    toast.success(`✅ Custom array set: [${values.join(', ')}]`, {
+                      position: "top-right",
+                      autoClose: 3000,
+                      theme: "colored",
+                    });
+                  }
+                }}
+                className="apply-array-btn"
+              >
+                Apply
+              </button>
+            </div>
+
             <button onClick={handleRunAlgorithm} disabled={isLoading}>
-              Run {selectedAlgorithm.replace(/-/g, " ")}
+              🚀 Run {selectedAlgorithm.replace(/-/g, " ")}
             </button>
           </>
         );
@@ -3767,6 +3880,14 @@ const AlgorithmPage = () => {
                   tree={bstTree}
                   steps={algorithmData?.steps}
                   value={bstOperationResult.value}
+                />
+              )}
+              {(category === "arrays" || category === "array-operations") && showArrayResultPanel && arrayOperationResult && (
+                <ArrayResultPanel
+                  result={arrayOperationResult}
+                  operation={selectedAlgorithm}
+                  array={array}
+                  steps={algorithmData?.steps}
                 />
               )}
 

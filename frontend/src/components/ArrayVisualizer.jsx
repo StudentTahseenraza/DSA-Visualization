@@ -1,7 +1,6 @@
-// components/ArrayVisualizer.jsx
-import { useState, useEffect } from 'react';
+// components/ArrayVisualizer.jsx - UPDATED with enhanced animations
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ZoomPanWrapper from './ZoomPanWrapper';
 import '../styles/ArrayVisualizer.css';
 
 const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
@@ -14,22 +13,78 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
   const [highlightedIndices, setHighlightedIndices] = useState([]);
   const [operationElements, setOperationElements] = useState([]);
   const [operationInProgress, setOperationInProgress] = useState(false);
+  const [deletingIndex, setDeletingIndex] = useState(null);
+  const [insertingValue, setInsertingValue] = useState(null);
+  const [insertingIndex, setInsertingIndex] = useState(null);
+  const [pushingValue, setPushingValue] = useState(null);
+  const [poppingValue, setPoppingValue] = useState(null);
   
-  // User input states
-  const [userArrayInput, setUserArrayInput] = useState('');
-  const [userValue, setUserValue] = useState('');
-  const [userPosition, setUserPosition] = useState('');
-  const [userDirection, setUserDirection] = useState('left');
-  const [userPositions, setUserPositions] = useState('1');
-  const [customArray, setCustomArray] = useState(initialArray);
-  const [inputError, setInputError] = useState('');
+  // Enhanced animation states
+  const [swappingIndices, setSwappingIndices] = useState(null);
+  const [movingElement, setMovingElement] = useState(null);
+  const [rotatingElements, setRotatingElements] = useState([]);
+  const [shiftDirection, setShiftDirection] = useState(null);
+  
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     if (step) {
+      // Update array
       if (step.array) {
         setArray(step.array);
-        setCustomArray(step.array);
       }
+      
+      // Handle different operation types with enhanced animations
+      if (step.action === 'delete' && step.index !== undefined) {
+        // Enhanced delete animation
+        setDeletingIndex(step.index);
+        setTimeout(() => {
+          setDeletingIndex(null);
+        }, 500);
+      }
+      
+      if (step.action === 'insert' && step.value !== undefined && step.index !== undefined) {
+        // Enhanced insert animation with position
+        setInsertingValue(step.value);
+        setInsertingIndex(step.index);
+        setShiftDirection('right');
+        setTimeout(() => {
+          setInsertingValue(null);
+          setInsertingIndex(null);
+          setShiftDirection(null);
+        }, 500);
+      }
+      
+      // Handle swap animation for reverse operation
+      if (step.action === 'swap' && step.index1 !== undefined && step.index2 !== undefined) {
+        setSwappingIndices({ from: step.index1, to: step.index2 });
+        setTimeout(() => {
+          setSwappingIndices(null);
+        }, 500);
+      }
+      
+      // Handle rotate step animation
+      if (step.action === 'rotate-step' && step.direction && step.value !== undefined) {
+        setRotatingElements([{ value: step.value, direction: step.direction, step: step.step }]);
+        setTimeout(() => {
+          setRotatingElements([]);
+        }, 400);
+      }
+      
+      if (step.action === 'push' && step.value !== undefined) {
+        setPushingValue(step.value);
+        setTimeout(() => {
+          setPushingValue(null);
+        }, 500);
+      }
+      
+      if (step.action === 'pop' && step.value !== undefined) {
+        setPoppingValue(step.value);
+        setTimeout(() => {
+          setPoppingValue(null);
+        }, 500);
+      }
+      
       setCurrentIndex(step.index !== undefined ? step.index : null);
       setComparingIndex(step.comparingIndex !== undefined ? step.comparingIndex : null);
       setFoundIndex(step.foundIndex !== undefined ? step.foundIndex : null);
@@ -57,142 +112,16 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     }
   }, [step]);
 
-  // Parse user array input
-  const parseArrayInput = (input) => {
-    if (!input.trim()) return [];
-    
-    // Split by comma or space and convert to numbers
-    const elements = input.split(/[,\s]+/).filter(item => item.trim() !== '');
-    return elements.map(item => {
-      const num = Number(item.trim());
-      return isNaN(num) ? item.trim() : num;
-    });
-  };
-
-  const handleArrayInputChange = (e) => {
-    setUserArrayInput(e.target.value);
-    setInputError('');
-  };
-
-  const handleSetCustomArray = () => {
-    const parsedArray = parseArrayInput(userArrayInput);
-    if (parsedArray.length === 0) {
-      setInputError('Please enter valid array elements');
-      return;
-    }
-    setCustomArray(parsedArray);
-    setArray(parsedArray);
-    setMessage(`Custom array set: [${parsedArray.join(', ')}]`);
-    setInputError('');
-  };
-
-  const handleResetToDefault = () => {
-    const defaultArray = [5, 2, 8, 1, 4, 3, 6, 7];
-    setCustomArray(defaultArray);
-    setArray(defaultArray);
-    setUserArrayInput(defaultArray.join(', '));
-    setMessage('Reset to default array');
-    setInputError('');
-  };
-
-  const handlePerformOperation = async () => {
-    if (!operation) {
-      setInputError('Please select an operation first');
-      return;
-    }
-
-    // Validate inputs based on operation
-    let url = `http://localhost:5000/api/array/${operation}`;
-    let body = {
-      array: customArray
-    };
-
-    switch (operation) {
-      case 'insert':
-      case 'update':
-        if (!userValue || !userPosition) {
-          setInputError(`Value and position are required for ${operation} operation`);
-          return;
-        }
-        body.value = Number(userValue);
-        body.position = Number(userPosition);
-        break;
-      
-      case 'delete':
-        if (!userPosition) {
-          setInputError('Position is required for delete operation');
-          return;
-        }
-        body.position = Number(userPosition);
-        break;
-      
-      case 'search':
-        if (!userValue) {
-          setInputError('Value is required for search operation');
-          return;
-        }
-        body.value = Number(userValue);
-        break;
-      
-      case 'push':
-        if (!userValue) {
-          setInputError('Value is required for push operation');
-          return;
-        }
-        body.value = Number(userValue);
-        break;
-      
-      case 'rotate':
-        if (!userPositions) {
-          setInputError('Number of positions is required for rotate operation');
-          return;
-        }
-        body.direction = userDirection;
-        body.positions = Number(userPositions);
-        break;
-      
-      case 'traverse':
-      case 'reverse':
-      case 'pop':
-        // No additional parameters needed
-        break;
-      
-      default:
-        setInputError('Invalid operation');
-        return;
-    }
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Operation failed');
+  // Scroll to show current element when traversing
+  useEffect(() => {
+    if (currentIndex !== null && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const element = container.querySelector(`.array-element-${currentIndex}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
-
-      const data = await response.json();
-      
-      // Update the visualizer with the first step
-      if (data.steps && data.steps.length > 0) {
-        // You'll need to implement a step-by-step animation controller
-        // For now, we'll just set the final array
-        setArray(data.array);
-        setMessage(`${operation} operation completed successfully`);
-      }
-      
-      setInputError('');
-      
-    } catch (error) {
-      console.error('Error performing operation:', error);
-      setInputError(error.message || 'Failed to perform operation');
     }
-  };
+  }, [currentIndex]);
 
   const getElementClass = (index) => {
     let classes = 'array-element';
@@ -209,8 +138,58 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     if (highlightedIndices.includes(index)) {
       classes += ' highlighted';
     }
+    if (deletingIndex === index) {
+      classes += ' deleting';
+    }
+    if (insertingIndex === index) {
+      classes += ' inserting';
+    }
+    if (swappingIndices && (index === swappingIndices.from || index === swappingIndices.to)) {
+      classes += ' swapping';
+    }
+    if (rotatingElements.length > 0 && rotatingElements[0].value === array[index]) {
+      classes += ' rotating';
+    }
     
     return classes;
+  };
+
+  const getElementAnimation = (index) => {
+    // Enhanced animations for moving elements
+    if (swappingIndices) {
+      if (index === swappingIndices.from) {
+        return {
+          initial: { x: 0 },
+          animate: { x: (swappingIndices.to - swappingIndices.from) * 70 },
+          transition: { duration: 0.4, ease: "easeInOut" }
+        };
+      }
+      if (index === swappingIndices.to) {
+        return {
+          initial: { x: 0 },
+          animate: { x: (swappingIndices.from - swappingIndices.to) * 70 },
+          transition: { duration: 0.4, ease: "easeInOut" }
+        };
+      }
+    }
+    
+    if (shiftDirection === 'right' && index > insertingIndex) {
+      return {
+        initial: { x: -70 },
+        animate: { x: 0 },
+        transition: { duration: 0.3, delay: (index - insertingIndex) * 0.05 }
+      };
+    }
+    
+    if (shiftDirection === 'left' && index >= deletingIndex) {
+      return {
+        initial: { x: 70 },
+        animate: { x: 0 },
+        transition: { duration: 0.3, delay: (index - deletingIndex) * 0.05 }
+      };
+    }
+    
+    return null;
   };
 
   const getActionClass = () => {
@@ -233,6 +212,8 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
         return 'action-push';
       case 'pop':
         return 'action-pop';
+      case 'swap':
+        return 'action-swap';
       default:
         return '';
     }
@@ -273,20 +254,90 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     });
   };
 
-  const renderArrayElements = () => {
-    return array.map((value, index) => (
+  // Render rotating element animation for rotate operation
+  const renderRotatingElements = () => {
+    return rotatingElements.map((elem, idx) => (
       <motion.div
-        key={index}
-        className={getElementClass(index)}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        layout
+        key={idx}
+        className="operation-element rotating-element"
+        initial={{ x: elem.direction === 'left' ? 0 : 0, opacity: 1 }}
+        animate={{ 
+          x: elem.direction === 'left' ? -70 : 70,
+          opacity: 0 
+        }}
+        transition={{ duration: 0.4 }}
+        style={{
+          top: '20px',
+          left: elem.direction === 'left' ? '0px' : `${(array.length - 1) * 70}px`,
+          position: 'absolute'
+        }}
       >
-        <span className="value">{value}</span>
-        <span className="index">{index}</span>
+        <div className="operation-value">{elem.value}</div>
+        <div className="operation-label">Moving</div>
       </motion.div>
     ));
+  };
+
+  const renderPushingElement = () => {
+    if (!pushingValue) return null;
+    return (
+      <motion.div
+        className="operation-element push-element"
+        initial={{ scale: 0, opacity: 0, x: 100 }}
+        animate={{ scale: 1, opacity: 1, x: 0 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          top: '20px',
+          right: '0',
+          position: 'absolute'
+        }}
+      >
+        <div className="operation-value">{pushingValue}</div>
+        <div className="operation-label">Push</div>
+      </motion.div>
+    );
+  };
+
+  const renderPoppingElement = () => {
+    if (!poppingValue) return null;
+    return (
+      <motion.div
+        className="operation-element pop-element"
+        initial={{ scale: 1, opacity: 1, x: 0 }}
+        animate={{ scale: 0, opacity: 0, x: 100 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          top: '20px',
+          right: '0',
+          position: 'absolute'
+        }}
+      >
+        <div className="operation-value">{poppingValue}</div>
+        <div className="operation-label">Pop</div>
+      </motion.div>
+    );
+  };
+
+  const renderArrayElements = () => {
+    return array.map((value, index) => {
+      const animation = getElementAnimation(index);
+      
+      return (
+        <motion.div
+          key={`${index}-${value}`}
+          className={`${getElementClass(index)} array-element-${index}`}
+          initial={animation?.initial || { scale: 0, opacity: 0 }}
+          animate={animation?.animate || { scale: 1, opacity: 1 }}
+          transition={animation?.transition || { duration: 0.3, delay: index * 0.02 }}
+          layout
+        >
+          <span className="value">{value}</span>
+          <span className="index">{index}</span>
+        </motion.div>
+      );
+    });
   };
 
   const renderOperationInfo = () => {
@@ -297,6 +348,7 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
             {step.direction === 'left' ? '↶' : '↷'}
           </span>
           <span className="positions">{step.positions} positions</span>
+          {step.step && <span className="step-info">Step {step.step} of {step.positions}</span>}
         </div>
       );
     }
@@ -304,7 +356,8 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     if (action === 'swap') {
       return (
         <div className="operation-info">
-          <span>Swapping positions {step?.index1} and {step?.index2}</span>
+          <span>🔄 Swapping positions {step?.index1} and {step?.index2}</span>
+          <span className="swap-animation">Values: {step?.value1} ↔ {step?.value2}</span>
         </div>
       );
     }
@@ -312,7 +365,7 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     if (action === 'push') {
       return (
         <div className="operation-info">
-          <span>Pushing value {step?.value} to the end</span>
+          <span>📥 Pushing value {step?.value} to the end</span>
         </div>
       );
     }
@@ -320,7 +373,25 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     if (action === 'pop') {
       return (
         <div className="operation-info">
-          <span>Popping value {step?.value} from the end</span>
+          <span>📤 Popping value {step?.value} from the end</span>
+        </div>
+      );
+    }
+
+    if (action === 'insert' && insertingValue) {
+      return (
+        <div className="operation-info">
+          <span>✨ Inserting {insertingValue} at position {insertingIndex}</span>
+          <span className="shift-info">Shifting elements right...</span>
+        </div>
+      );
+    }
+
+    if (action === 'delete' && deletingIndex !== null) {
+      return (
+        <div className="operation-info">
+          <span>🗑️ Deleting element at position {deletingIndex}</span>
+          <span className="shift-info">Shifting elements left...</span>
         </div>
       );
     }
@@ -328,119 +399,45 @@ const ArrayVisualizer = ({ step, operation, initialArray = [] }) => {
     return null;
   };
 
-  const renderInputControls = () => {
-    return (
-      <div className="input-controls">
-        <div className="input-section">
-          <h4>Custom Array Input</h4>
-          <div className="input-group">
-            <input
-              type="text"
-              value={userArrayInput}
-              onChange={handleArrayInputChange}
-              placeholder="Enter numbers (e.g., 5,2,8,1,4,3,6,7)"
-              className="array-input"
-            />
-            <button onClick={handleSetCustomArray} className="btn-set">
-              Set Array
-            </button>
-            <button onClick={handleResetToDefault} className="btn-reset">
-              Reset to Default
-            </button>
-          </div>
-          <div className="current-array-display">
-            Current Array: [{customArray.join(', ')}]
-          </div>
-        </div>
-
-        <div className="input-section">
-          <h4>Operation Parameters</h4>
-          <div className="operation-controls">
-            {(operation === 'insert' || operation === 'update' || operation === 'push' || operation === 'search') && (
-              <div className="control-group">
-                <label>Value:</label>
-                <input
-                  type="number"
-                  value={userValue}
-                  onChange={(e) => setUserValue(e.target.value)}
-                  placeholder="Enter value"
-                />
-              </div>
-            )}
-
-            {(operation === 'insert' || operation === 'update' || operation === 'delete') && (
-              <div className="control-group">
-                <label>Position:</label>
-                <input
-                  type="number"
-                  value={userPosition}
-                  onChange={(e) => setUserPosition(e.target.value)}
-                  placeholder="Enter index"
-                  min="0"
-                  max={customArray.length}
-                />
-              </div>
-            )}
-
-            {operation === 'rotate' && (
-              <>
-                <div className="control-group">
-                  <label>Direction:</label>
-                  <select value={userDirection} onChange={(e) => setUserDirection(e.target.value)}>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                  </select>
-                </div>
-                <div className="control-group">
-                  <label>Positions:</label>
-                  <input
-                    type="number"
-                    value={userPositions}
-                    onChange={(e) => setUserPositions(e.target.value)}
-                    placeholder="Number of positions"
-                    min="1"
-                  />
-                </div>
-              </>
-            )}
-
-            <button onClick={handlePerformOperation} className="btn-perform">
-              Perform {operation} Operation
-            </button>
-          </div>
-        </div>
-
-        {inputError && <div className="error-message">{inputError}</div>}
-      </div>
-    );
-  };
-
   return (
-    <div className="array-visualizer-container">
-      {renderInputControls()}
+    <div className={`array-visualizer-container ${getActionClass()}`}>
+      <div className="array-info">
+        <h3>Array Visualization</h3>
+        <p className="message">{message || 'Ready for operations'}</p>
+      </div>
       
-      <ZoomPanWrapper>
-        <div className={`array-visualizer ${getActionClass()}`}>
-          <div className="array-info">
-            <h3>Array {operation ? `- ${operation.charAt(0).toUpperCase() + operation.slice(1)}` : 'Visualizer'}</h3>
-            <p className="message">{message}</p>
+      <div className="array-scroll-container" ref={scrollContainerRef}>
+        <div className="array-visualization-area">
+          <div className="array-container">
+            {renderArrayElements()}
           </div>
           
-          <div className="array-visualization-area">
-            <div className="array-container">
-              {renderArrayElements()}
-            </div>
-            
-            <AnimatePresence>
-              {operationInProgress && renderOperationElements()}
-            </AnimatePresence>
-            
-            <div className="array-base"></div>
-          </div>
-
-          {renderOperationInfo()}
+          <AnimatePresence>
+            {operationInProgress && renderOperationElements()}
+            {pushingValue && renderPushingElement()}
+            {poppingValue && renderPoppingElement()}
+            {renderRotatingElements()}
+          </AnimatePresence>
+          
+          <div className="array-base"></div>
         </div>
-      </ZoomPanWrapper>
+      </div>
+
+      {renderOperationInfo()}
+
+      <div className="array-footer">
+        <div className="array-stats">
+          <span>Size: {array.length}</span>
+          {array.length > 0 && (
+            <>
+              <span>Min: {Math.min(...array)}</span>
+              <span>Max: {Math.max(...array)}</span>
+              <span>Sum: {array.reduce((a, b) => a + b, 0)}</span>
+              <span>Avg: {(array.reduce((a, b) => a + b, 0) / array.length).toFixed(1)}</span>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

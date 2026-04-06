@@ -1,0 +1,390 @@
+/* styles/ArrayResultPanel.css */
+.array-result-panel {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-color) 100%);
+  border-radius: 12px;
+  margin-top: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(46, 204, 113, 0.1));
+  border-bottom: 1px solid var(--border-color);
+}
+
+.result-header h3 {
+  margin: 0;
+  color: #3498db;
+}
+
+.result-badge {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.result-tabs {
+  display: flex;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.tab-btn.active {
+  color: #3498db;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3498db;
+}
+
+.result-content {
+  padding: 20px;
+  max-height: 550px;
+  overflow-y: auto;
+}
+
+/* Summary Tab */
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  background: rgba(52, 152, 219, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #3498db;
+}
+
+.operation-result {
+  background: rgba(46, 204, 113, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 3px solid #2ecc71;
+}
+
+.operation-result p {
+  margin: 5px 0;
+}
+
+.result-status {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.result-status.success {
+  color: #2ecc71;
+}
+
+.result-status.error {
+  color: #e74c3c;
+}
+
+.explanation-box {
+  background: rgba(155, 89, 182, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.explanation-box details {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.explanation-box summary {
+  cursor: pointer;
+  color: #9b59b6;
+  font-weight: 500;
+}
+
+.current-array-state {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 8px;
+}
+
+.array-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.array-value-badge {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  padding: 8px 15px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.array-visual-hint {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-top: 8px;
+}
+
+/* Complexity Tab */
+.complexity-table {
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 8px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.complexity-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.complexity-row:last-child {
+  border-bottom: none;
+}
+
+.complexity-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.complexity-value {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.complexity-note {
+  background: rgba(241, 196, 15, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  border-left: 3px solid #f1c40f;
+}
+
+/* Analysis Tab */
+.analysis-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 8px;
+}
+
+.analysis-section h4 {
+  margin-bottom: 10px;
+  color: #3498db;
+}
+
+.analysis-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.analysis-section li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.performance-metrics {
+  margin-top: 15px;
+}
+
+.metric {
+  margin: 15px 0;
+}
+
+.metric span:first-child {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.metric-bar {
+  background: rgba(0, 0, 0, 0.2);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.metric-fill {
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.metric-value {
+  font-size: 12px;
+  color: #2ecc71;
+}
+
+/* Optimization Tab */
+.optimization-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(46, 204, 113, 0.05);
+  border-radius: 8px;
+}
+
+.optimization-section h4 {
+  margin-bottom: 10px;
+  color: #2ecc71;
+}
+
+.optimization-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.optimization-section li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.optimization-note {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 8px;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+  background: rgba(52, 152, 219, 0.1);
+  font-weight: 600;
+}
+
+.comparison-table td {
+  font-family: 'Courier New', monospace;
+}
+
+.comparison-table .good {
+  color: #2ecc71;
+}
+
+.comparison-table .poor {
+  color: #e74c3c;
+}
+
+.note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.tip {
+  font-size: 12px;
+  color: #f1c40f;
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(241, 196, 15, 0.1);
+  border-radius: 6px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .result-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .result-content {
+    padding: 15px;
+  }
+  
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+  }
+  
+  .array-values {
+    justify-content: center;
+  }
+  
+  .array-value-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

@@ -605,15 +605,17 @@ const stackOperations = (operation, ...args) => {
     }
 
     return { 
-      steps, 
-      pseudocode: pseudocode[operation] || [], 
-      stack: stack.items 
-    };
+  steps, 
+  pseudocode: pseudocode[operation] || [], 
+  explanations: steps.map(step => step.message), // ✅ ADD THIS
+  stack: stack.items 
+};
   } catch (error) {
     console.error(`Error in stack operation ${operation}:`, error);
     return { 
       steps: [], 
       pseudocode: [], 
+      explanations: [error.message], // ✅ ADD
       error: error.message,
       stack: stack.items 
     };
