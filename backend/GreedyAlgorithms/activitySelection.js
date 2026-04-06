@@ -1,4 +1,5 @@
-// algorithms/activitySelection.js
+// algorithms/activitySelection.js - Updated with better step data
+
 const activitySelection = (activities) => {
   const steps = [];
   const explanations = [];
@@ -11,85 +12,84 @@ const activitySelection = (activities) => {
   ];
 
   // Sort activities by finish time
-  const explanation1 = 'Sorting activities by finish time';
-  steps.push({
-    activities: [...activities],
-    selected: [],
-    currentIndex: -1,
-    comparingIndices: null,
-    currentLine: 1,
-    action: 'sort'
-  });
-  explanations.push(explanation1);
-
   const sortedActivities = [...activities].sort((a, b) => a.finish - b.finish);
   
-  const explanation2 = 'Selecting first activity';
   steps.push({
     activities: [...sortedActivities],
-    selected: [0],
-    currentIndex: 0,
-    comparingIndices: null,
-    currentLine: 2,
-    action: 'select-first'
+    selected: [],
+    currentIndex: -1,
+    comparingIndices: [],
+    action: 'sort',
+    message: 'Sorting activities by finish time...'
   });
-  explanations.push(explanation2);
+  explanations.push('Sorting activities by finish time');
 
+  // Select first activity
   const selected = [0];
+  
+  steps.push({
+    activities: [...sortedActivities],
+    selected: [...selected],
+    currentIndex: 0,
+    comparingIndices: [],
+    action: 'select-first',
+    message: `Selecting first activity: ${sortedActivities[0].name} (${sortedActivities[0].start}-${sortedActivities[0].finish})`
+  });
+  explanations.push(`Selected first activity: ${sortedActivities[0].name}`);
+
   let lastSelected = 0;
 
   // Select activities
   for (let i = 1; i < sortedActivities.length; i++) {
-    const explanation3 = `Checking activity ${i}: start=${sortedActivities[i].start}, finish=${sortedActivities[i].finish}`;
+    // Show comparison step
     steps.push({
       activities: [...sortedActivities],
       selected: [...selected],
       currentIndex: i,
       comparingIndices: [lastSelected, i],
-      currentLine: 3,
-      action: 'check-activity'
+      action: 'check-activity',
+      message: `Checking if ${sortedActivities[i].name} (${sortedActivities[i].start}-${sortedActivities[i].finish}) can be selected...`
     });
-    explanations.push(explanation3);
+    explanations.push(`Checking activity ${i}: start=${sortedActivities[i].start}, finish=${sortedActivities[i].finish}`);
 
     if (sortedActivities[i].start >= sortedActivities[lastSelected].finish) {
       selected.push(i);
       lastSelected = i;
-
-      const explanation4 = `Activity ${i} selected (start >= finish of last selected)`;
+      
       steps.push({
         activities: [...sortedActivities],
         selected: [...selected],
         currentIndex: i,
-        comparingIndices: null,
-        currentLine: 4,
-        action: 'select-activity'
+        comparingIndices: [],
+        action: 'select-activity',
+        message: `✓ Selected ${sortedActivities[i].name}! (${sortedActivities[i].start}-${sortedActivities[i].finish})`
       });
-      explanations.push(explanation4);
+      explanations.push(`Activity ${i} selected (start >= finish of last selected)`);
     } else {
-      const explanation5 = `Activity ${i} not selected (conflict with last selected)`;
       steps.push({
         activities: [...sortedActivities],
         selected: [...selected],
         currentIndex: i,
-        comparingIndices: null,
-        currentLine: 4,
-        action: 'skip-activity'
+        comparingIndices: [],
+        action: 'skip-activity',
+        message: `✗ Skipped ${sortedActivities[i].name} - conflicts with selected activity`
       });
-      explanations.push(explanation5);
+      explanations.push(`Activity ${i} not selected (conflict with last selected)`);
     }
   }
 
   // Final result
-  const finalExplanation = `Selected ${selected.length} activities: ${selected.map(i => sortedActivities[i].name).join(', ')}`;
+  const selectedNames = selected.map(i => sortedActivities[i].name).join(', ');
   steps.push({
     activities: [...sortedActivities],
     selected: [...selected],
     currentIndex: -1,
-    comparingIndices: null,
-    currentLine: 5,
-    action: 'complete'
+    comparingIndices: [],
+    action: 'complete',
+    message: `✅ Activity selection complete! Selected ${selected.length} activities: ${selectedNames}`,
+    result: { selected, activities: sortedActivities }
   });
-  explanations.push(finalExplanation);
+  explanations.push(`Selected ${selected.length} activities: ${selectedNames}`);
 
   return { steps, pseudocode, explanations };
 };

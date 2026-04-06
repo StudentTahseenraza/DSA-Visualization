@@ -1,4 +1,5 @@
-// algorithms/huffmanEncoding.js
+// algorithms/huffmanEncoding.js - Updated with tree data
+
 const huffmanEncoding = (text) => {
   const steps = [];
   const explanations = [];
@@ -13,118 +14,115 @@ const huffmanEncoding = (text) => {
   ];
 
   // Calculate character frequencies
-  const explanation1 = 'Calculating frequency of each character';
-  steps.push({
-    text: text,
-    frequencies: {},
-    nodes: [],
-    tree: null,
-    codes: {},
-    currentLine: 1,
-    action: 'calculate-frequencies'
-  });
-  explanations.push(explanation1);
-
   const freq = {};
   for (let char of text) {
     freq[char] = (freq[char] || 0) + 1;
   }
-
-  const explanation2 = 'Creating leaf nodes for each character';
+  
   steps.push({
     text: text,
-    frequencies: {...freq},
-    nodes: Object.entries(freq).map(([char, frequency]) => ({ char, frequency })),
+    frequencies: { ...freq },
+    nodes: [],
     tree: null,
     codes: {},
-    currentLine: 2,
-    action: 'create-nodes'
+    action: 'calculate-frequencies',
+    message: 'Calculating character frequencies...'
   });
-  explanations.push(explanation2);
+  explanations.push('Calculating frequency of each character');
 
+  // Create leaf nodes
   let nodes = Object.entries(freq).map(([char, frequency]) => ({ 
     char, frequency, left: null, right: null 
   }));
+  
+  steps.push({
+    text: text,
+    frequencies: { ...freq },
+    nodes: [...nodes],
+    tree: null,
+    codes: {},
+    action: 'create-nodes',
+    message: `Created ${nodes.length} leaf nodes for each character`
+  });
+  explanations.push('Creating leaf nodes for each character');
 
   // Build Huffman tree
+  let stepCounter = 1;
   while (nodes.length > 1) {
-    const explanation3 = `Nodes in queue: ${nodes.length}`;
-    steps.push({
-      text: text,
-      frequencies: {...freq},
-      nodes: [...nodes],
-      tree: null,
-      codes: {},
-      currentLine: 3,
-      action: 'queue-status'
-    });
-    explanations.push(explanation3);
-
-    // Sort by frequency
     nodes.sort((a, b) => a.frequency - b.frequency);
     
     const left = nodes.shift();
     const right = nodes.shift();
-
-    const explanation4 = `Combining nodes: '${left.char}' (${left.frequency}) and '${right.char}' (${right.frequency})`;
+    
     steps.push({
       text: text,
-      frequencies: {...freq},
+      frequencies: { ...freq },
       nodes: [...nodes],
-      combining: [left, right],
+      combining: { left, right },
       tree: null,
       codes: {},
-      currentLine: 4,
-      action: 'combine-nodes'
+      action: 'combine-nodes',
+      message: `Combining '${left.char || '●'}' (${left.frequency}) and '${right.char || '●'}' (${right.frequency})`
     });
-    explanations.push(explanation4);
+    explanations.push(`Combining nodes: '${left.char}' (${left.frequency}) and '${right.char}' (${right.frequency})`);
 
     const newNode = {
-      char: left.char + right.char,
+      char: (left.char || '') + (right.char || ''),
       frequency: left.frequency + right.frequency,
       left: left,
       right: right
     };
-
+    
     nodes.push(newNode);
-
-    const explanation5 = `Created new node: '${newNode.char}' (frequency: ${newNode.frequency})`;
+    
     steps.push({
       text: text,
-      frequencies: {...freq},
+      frequencies: { ...freq },
       nodes: [...nodes],
       tree: null,
       codes: {},
-      currentLine: 5,
-      action: 'new-node'
+      action: 'new-node',
+      message: `Created new node with frequency ${newNode.frequency}`
     });
-    explanations.push(explanation5);
+    explanations.push(`Created new node: '${newNode.char}' (frequency: ${newNode.frequency})`);
+    
+    stepCounter++;
   }
 
   const tree = nodes[0];
 
   // Generate codes
-  const explanation6 = 'Generating Huffman codes by traversing the tree';
-  steps.push({
-    text: text,
-    frequencies: {...freq},
-    nodes: [],
-    tree: tree,
-    codes: {},
-    currentLine: 7,
-    action: 'generate-codes'
-  });
-  explanations.push(explanation6);
-
   const codes = {};
   function generateCodes(node, code) {
+    if (!node) return;
     if (!node.left && !node.right) {
       codes[node.char] = code;
+      steps.push({
+        text: text,
+        frequencies: { ...freq },
+        nodes: [],
+        tree: { ...tree },
+        codes: { ...codes },
+        currentNode: node.char,
+        action: 'assign-code',
+        message: `Assigned code '${code}' to character '${node.char}'`
+      });
       return;
     }
     if (node.left) generateCodes(node.left, code + '0');
     if (node.right) generateCodes(node.right, code + '1');
   }
+  
+  steps.push({
+    text: text,
+    frequencies: { ...freq },
+    nodes: [],
+    tree: { ...tree },
+    codes: {},
+    action: 'generate-codes-start',
+    message: 'Generating Huffman codes by traversing the tree...'
+  });
+  
   generateCodes(tree, '');
 
   // Encode text
@@ -134,18 +132,24 @@ const huffmanEncoding = (text) => {
   }
 
   // Final result
-  const finalExplanation = `Huffman encoding complete! Compression ratio: ${(text.length * 8 / encoded.length).toFixed(2)}:1`;
+  const compressionRatio = (text.length * 8) / encoded.length;
   steps.push({
     text: text,
-    frequencies: {...freq},
+    frequencies: { ...freq },
     nodes: [],
-    tree: tree,
-    codes: {...codes},
+    tree: { ...tree },
+    codes: { ...codes },
     encoded: encoded,
-    currentLine: 7,
-    action: 'complete'
+    action: 'complete',
+    message: `✅ Huffman encoding complete! Compression ratio: ${compressionRatio.toFixed(2)}:1`,
+    result: {
+      compressionRatio,
+      originalBits: text.length * 8,
+      compressedBits: encoded.length,
+      spaceSaved: ((1 - encoded.length / (text.length * 8)) * 100).toFixed(1)
+    }
   });
-  explanations.push(finalExplanation);
+  explanations.push(`Huffman encoding complete! Compression ratio: ${compressionRatio.toFixed(2)}:1`);
 
   return { steps, pseudocode, explanations };
 };

@@ -41,6 +41,9 @@ import BSTResultPanel from "./BSTResultPanel";
 
 import ArrayResultPanel from "./ArrayResultPanel";
 
+import GreedyResultPanel from "./GreedyResultPanel";
+
+
 
 
 const AlgorithmPage = () => {
@@ -185,6 +188,9 @@ const AlgorithmPage = () => {
   const [huffmanText, setHuffmanText] = useState("abracadabra");
   const [coins, setCoins] = useState([1, 2, 5, 10, 20, 50, 100]);
   const [coinAmount, setCoinAmount] = useState(93);
+
+  const [showGreedyResultPanel, setShowGreedyResultPanel] = useState(false);
+  const [greedyOperationResult, setGreedyOperationResult] = useState(null);
 
   // Dynamic Programming states
   const [fibonacciN, setFibonacciN] = useState(10);
@@ -802,76 +808,154 @@ const AlgorithmPage = () => {
         });
       }
       else if (category === "greedy") {
-        if (selectedAlgorithm === "activity-selection") {
-          response = await axios.post(`${BASE_URL}/greedy/activity-selection`, {
-            activities,
-          });
-          toast.success("📅 Activity selection optimized", {
-            position: "top-right",
-            autoClose: 4000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-          });
-        } else if (selectedAlgorithm === "fractional-knapsack") {
-          response = await axios.post(
-            `${BASE_URL}/greedy/fractional-knapsack`,
-            {
+        let requestBody = {};
+
+        // Prepare request body based on selected algorithm
+        switch (selectedAlgorithm) {
+          case "activity-selection":
+            requestBody = { activities };
+            break;
+          case "fractional-knapsack":
+            requestBody = {
               items: knapsackItems,
-              capacity: knapsackCapacity,
-            }
-          );
-          toast.success("🎒 Fractional knapsack solution found", {
+              capacity: knapsackCapacity
+            };
+            break;
+          case "job-scheduling":
+            requestBody = { jobs };
+            break;
+          case "huffman-encoding":
+            requestBody = { text: huffmanText };
+            break;
+          case "coin-change-greedy":
+            requestBody = {
+              coins: coins,
+              amount: coinAmount
+            };
+            break;
+          default:
+            toast.warning("❓ Please select a valid greedy algorithm", {
+              position: "top-right",
+              autoClose: 5000,
+              theme: "colored",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        // Show loading toast
+        const loadingToast = toast.loading(`🔄 Running ${selectedAlgorithm.replace(/-/g, ' ')}...`, {
+          position: "top-right",
+          autoClose: false,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+        try {
+          response = await axios.post(`${BASE_URL}/greedy/${selectedAlgorithm}`, requestBody);
+
+          // Dismiss loading toast
+          toast.dismiss(loadingToast);
+
+          // Validate response
+          if (!response.data) {
+            throw new Error("No data received from server");
+          }
+
+          // Set algorithm data
+          setAlgorithmData({
+            steps: response.data.steps || [],
+            pseudocode: response.data.pseudocode || [],
+            explanations: response.data.explanations || [],
+            result: response.data.result || null
+          });
+
+          // Store result for the result panel
+          setGreedyOperationResult({
+            algorithm: selectedAlgorithm,
+            data: response.data.result,
+            steps: response.data.steps,
+            timestamp: new Date().toISOString()
+          });
+
+          // Reset animation state
+          setCurrentStep(0);
+          setIsPlaying(false);
+          setShowGreedyResultPanel(false); // Reset result panel visibility
+
+          // Success toast with detailed message
+          let successMessage = "";
+          switch (selectedAlgorithm) {
+            case "activity-selection":
+              const selectedCount = response.data.result?.selected?.length || 0;
+              successMessage = `📅 Selected ${selectedCount} activities! Click Play to see animation.`;
+              break;
+            case "fractional-knapsack":
+              const totalValue = response.data.result?.totalValue?.toFixed(2) || 0;
+              successMessage = `🎒 Maximum value: $${totalValue}! Click Play to see animation.`;
+              break;
+            case "job-scheduling":
+              const totalProfit = response.data.result?.totalProfit || 0;
+              successMessage = `📋 Total profit: $${totalProfit}! Click Play to see animation.`;
+              break;
+            case "huffman-encoding":
+              const ratio = response.data.result?.compressionRatio?.toFixed(2) || 0;
+              successMessage = `🔤 Compression ratio: ${ratio}:1! Click Play to see animation.`;
+              break;
+            case "coin-change-greedy":
+              const coinsUsed = response.data.result?.result?.length || 0;
+              const remaining = response.data.result?.remaining;
+              if (remaining === 0) {
+                successMessage = `💰 Used ${coinsUsed} coins! Click Play to see animation.`;
+              } else {
+                successMessage = `⚠️ Cannot make exact change! Remaining: ${remaining}. Click Play to see animation.`;
+              }
+              break;
+            default:
+              successMessage = `✅ ${selectedAlgorithm.replace(/-/g, ' ')} loaded! Click Play to start animation.`;
+          }
+
+          toast.success(successMessage, {
             position: "top-right",
-            autoClose: 4000,
+            autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             theme: "colored",
           });
-        } else if (selectedAlgorithm === "job-scheduling") {
-          response = await axios.post(`${BASE_URL}/greedy/job-scheduling`, {
-            jobs: jobs,
+
+          // Log for debugging
+          console.log(`Greedy Algorithm ${selectedAlgorithm} completed:`, {
+            stepsCount: response.data.steps?.length || 0,
+            hasResult: !!response.data.result
           });
-          toast.success("📋 Job scheduling optimized", {
+
+        } catch (error) {
+          console.error("Greedy Algorithm error:", error);
+          toast.dismiss(loadingToast);
+          toast.error(`❌ ${error.response?.data?.error || error.message || "Error executing greedy algorithm"}`, {
             position: "top-right",
-            autoClose: 4000,
+            autoClose: 6000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             theme: "colored",
           });
-        } else if (selectedAlgorithm === "huffman-encoding") {
-          response = await axios.post(`${BASE_URL}/greedy/huffman-encoding`, {
-            text: huffmanText,
+
+          // Set error state
+          setAlgorithmData({
+            steps: [],
+            pseudocode: [],
+            explanations: [],
+            result: null
           });
-          toast.success("🔤 Huffman encoding completed", {
-            position: "top-right",
-            autoClose: 4000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-          });
-        } else if (selectedAlgorithm === "coin-change-greedy") {
-          response = await axios.post(`${BASE_URL}/greedy/coin-change`, {
-            coins: coins,
-            amount: coinAmount,
-          });
-          toast.success("💰 Coin change greedy solution found", {
-            position: "top-right",
-            autoClose: 4000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-          });
+          setGreedyOperationResult(null);
+          setAiExplanation(error.response?.data?.error || "Error loading algorithm steps. Please check inputs.");
         }
       } else if (category === "dynamic-programming") {
         // ============================================
@@ -1400,6 +1484,38 @@ const AlgorithmPage = () => {
           toast.info("🌳 BST operation complete! Check the results below.", {
             position: "top-right",
             autoClose: 3000,
+            theme: "colored",
+          });
+        }
+        if (category === "greedy" && currentStep >= algorithmData.steps.length - 1) {
+          setIsPlaying(false);
+          setShowGreedyResultPanel(true);
+
+          // Show specific success message based on algorithm
+          let completionMessage = "";
+          switch (selectedAlgorithm) {
+            case "activity-selection":
+              completionMessage = "📅 Activity selection complete! Check the optimized schedule below.";
+              break;
+            case "fractional-knapsack":
+              completionMessage = "🎒 Knapsack optimization complete! Check the best value below.";
+              break;
+            case "job-scheduling":
+              completionMessage = "📋 Job scheduling complete! Check maximum profit below.";
+              break;
+            case "huffman-encoding":
+              completionMessage = "🔤 Huffman encoding complete! Check compression results below.";
+              break;
+            case "coin-change-greedy":
+              completionMessage = "💰 Coin change complete! Check the coins used below.";
+              break;
+            default:
+              completionMessage = "🎯 Greedy algorithm complete! Check the results below.";
+          }
+
+          toast.info(completionMessage, {
+            position: "top-right",
+            autoClose: 4000,
             theme: "colored",
           });
         }
@@ -3888,6 +4004,15 @@ const AlgorithmPage = () => {
                   operation={selectedAlgorithm}
                   array={array}
                   steps={algorithmData?.steps}
+                />
+              )}
+
+              {category === "greedy" && showGreedyResultPanel && greedyOperationResult && (
+                <GreedyResultPanel
+                  result={greedyOperationResult}
+                  algorithm={selectedAlgorithm}
+                  steps={algorithmData?.steps}
+                  data={{ /* pass relevant data */ }}
                 />
               )}
 
