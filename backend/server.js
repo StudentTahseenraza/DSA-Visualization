@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const aiRoutes = require('./routes/aiVisualizationRoutes');
+
+
 
 
 // =====================
@@ -83,7 +84,6 @@ const authRoutes = require("./routes/authRoutes");
 // Register routes
 app.use("/api", algorithmRoutes);
 app.use("/api/auth", authRoutes);
-app.use('/api/ai', aiRoutes);
 
 console.log("✅ All routes loaded successfully");
 
@@ -124,10 +124,12 @@ app.use((err, req, res, next) => {
   });
 });
 
+
 // =====================
 // START SERVER
 // =====================
 app.listen(PORT, () => {
+  
   console.log(`
 🚀 Server running successfully
 ────────────────────────────────

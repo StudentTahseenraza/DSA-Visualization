@@ -1,0 +1,174 @@
+/* styles/DPInputPanel.css */
+.dp-input-panel {
+  background: #2d3748;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.dp-input-panel h3 {
+  color: #e2e8f0;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+}
+
+.dp-inputs {
+  margin-bottom: 20px;
+}
+
+.dp-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dp-input-group label {
+  color: #cbd5e0;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.dp-input-group input {
+  padding: 10px 12px;
+  background: #1a202c;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  width: 100%;
+}
+
+.dp-input-group input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.dp-input-group small {
+  color: #a0aec0;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Knapsack specific */
+.items-list {
+  background: #1a202c;
+  border-radius: 8px;
+  padding: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #2d3748;
+}
+
+.item-row span {
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.item-row button {
+  margin-left: auto;
+  background: #e53e3e;
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-item {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.add-item input {
+  flex: 1;
+  min-width: 100px;
+}
+
+.add-item button {
+  padding: 8px 16px;
+  background: #48bb78;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.capacity-input {
+  margin-top: 10px;
+}
+
+/* String inputs */
+.string-input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.string-input input {
+  font-family: monospace;
+}
+
+/* Coins input */
+.coins-input input {
+  font-family: monospace;
+}
+
+/* Dimensions input */
+.dimensions-input input {
+  font-family: monospace;
+}
+
+/* Run button */
+.run-dp-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.run-dp-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(66, 153, 225, 0.3);
+}
+
+.run-dp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .dp-input-panel {
+    padding: 15px;
+  }
+  
+  .add-item {
+    flex-direction: column;
+  }
+  
+  .add-item button {
+    width: 100%;
+  }
+  
+  .item-row {
+    flex-wrap: wrap;
+  }
+}

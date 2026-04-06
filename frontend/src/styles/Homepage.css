@@ -137,32 +137,6 @@
   }
 }
 
-/* AI Features Section */
-.ai-features-section {
-  margin-bottom: 3rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(231, 76, 60, 0.1));
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.ai-features-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #9b59b6, #e74c3c, #9b59b6);
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
 .section-title {
   font-size: 2rem;
   color: #e2e8f0;
@@ -341,4 +315,205 @@
   .feature-tagline {
     font-size: 0.8rem;
   }
+}
+
+/* frontend/src/styles/Homepage.css - Add these styles */
+
+/* AI Spotlight Section */
+.ai-spotlight {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(52, 152, 219, 0.1));
+  border-radius: 20px;
+  margin: 20px 40px 40px;
+}
+
+.spotlight-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #9b59b6, #3498db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.spotlight-subtitle {
+  text-align: center;
+  color: #a0aec0;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.ai-spotlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ai-spotlight-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 30px 25px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.ai-spotlight-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--card-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.ai-spotlight-card.hero-card {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 2px solid #3498db;
+}
+
+.spotlight-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--card-color);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.ai-spotlight-card h3 {
+  font-size: 24px;
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.spotlight-desc {
+  color: #a0aec0;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.spotlight-tagline {
+  color: var(--card-color);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #2d3748;
+}
+
+.spotlight-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.feature-pill {
+  background: #0f3460;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  border: 1px solid var(--card-color);
+}
+
+.spotlight-footer {
+  margin-top: auto;
+}
+
+.explore-link {
+  color: var(--card-color);
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.section-title {
+  font-size: 28px;
+  margin: 40px 20px 20px;
+  color: white;
+  padding-left: 20px;
+  border-left: 4px solid #e94560;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ai-spotlight-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-spotlight-card.hero-card {
+    grid-column: span 1;
+  }
+  
+  .spotlight-title {
+    font-size: 24px;
+  }
+  
+  .ai-spotlight {
+    margin: 20px;
+    padding: 20px;
+  }
+}
+
+/* Add to frontend/src/styles/Homepage.css */
+
+/* AI Card Special Styling */
+.algorithm-card.new-ai-card {
+  background: linear-gradient(145deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.1));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.algorithm-card.new-ai-card::before {
+  background: linear-gradient(90deg, #a855f7, #ec4899, transparent);
+  height: 3px;
+}
+
+.algorithm-card.new-ai-card:hover {
+  border-color: #a855f7;
+  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+}
+
+.algorithm-card.new-ai-card .new-badge {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+  z-index: 10;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Make sure new badge doesn't overlap with animation */
+.card-animation {
+  position: relative;
+  z-index: 1;
 }

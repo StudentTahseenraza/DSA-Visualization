@@ -1,4 +1,4 @@
-// App.jsx - Update with AuthProvider
+// App.jsx - Update with AI Code Engine route
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -15,10 +15,7 @@ import AlgorithmCompare from './components/AlgorithmCompare';
 import AuthModal from './components/AuthModal';
 import { useAuth } from './contexts/AuthContext';
 import UserProfile from './components/UserProfile';
-
-import AICodeVisualizer from './components/AICodeVisualizer';
-import AIDebugger from './components/AIDebugger';
-
+import AICodeAssistant from './components/AICodeAssistant';
 
 // Inner App component that uses auth
 const AppContent = () => {
@@ -39,8 +36,7 @@ const AppContent = () => {
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/profile" element={<UserProfile />} />
-            <Route path="/ai-code-visualizer" element={<AICodeVisualizer />} />
-            <Route path="/ai-debugger" element={<AIDebugger />} />
+            <Route path="/ai-code" element={<AICodeAssistant />} />
           </Routes>
         </div>
       </Router>

@@ -1,23 +1,62 @@
-// components/BSTViewer.jsx
-import { motion } from 'framer-motion';
+// components/BSTViewer.jsx - Updated version
+import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo, useState, useRef, useEffect } from 'react';
-import ZoomPanWrapper from './ZoomPanWrapper.jsx';
 import '../styles/BSTViewer.css';
 
 const BSTViewer = ({ step, algorithm = '' }) => {
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const containerRef = useRef(null);
-  const svgRef = useRef(null);
-  const [treeKey, setTreeKey] = useState(0);
+  const svgContainerRef = useRef(null);
   const [currentTree, setCurrentTree] = useState(null);
+  const [transitioningNodes, setTransitioningNodes] = useState(new Set());
+  const [deletedNodes, setDeletedNodes] = useState(new Set());
 
   // Update current tree whenever step changes
   useEffect(() => {
     if (step && step.tree) {
-      console.log('Step updated:', step); // Debug log
-      setCurrentTree(step.tree);
-      // Force re-render by incrementing key
-      setTreeKey(prev => prev + 1);
+      // Handle deletion animation
+      if (step.action === 'delete-removing' && step.removedNode) {
+        setDeletedNodes(prev => new Set(prev).add(step.removedNode));
+        setTransitioningNodes(prev => new Set(prev).add(step.removedNode));
+
+        // Remove after animation completes
+        setTimeout(() => {
+          setDeletedNodes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(step.removedNode);
+            return newSet;
+          });
+          setTransitioningNodes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(step.removedNode);
+            return newSet;
+          });
+          setCurrentTree(step.tree);
+        }, 500);
+      }
+      else if (step.action === 'delete-replacing' && step.currentNode) {
+        setTransitioningNodes(prev => new Set(prev).add(step.currentNode));
+        setTimeout(() => {
+          setTransitioningNodes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(step.currentNode);
+            return newSet;
+          });
+          setCurrentTree(step.tree);
+        }, 400);
+      }
+      else if (step.action === 'value-replaced') {
+        // For value replacement, just update the tree
+        setCurrentTree(step.tree);
+      }
+      else {
+        setCurrentTree(step.tree);
+        // Clear deleted nodes when not in deletion
+        if (step.action !== 'delete-removing' && step.action !== 'delete-replacing') {
+          setDeletedNodes(new Set());
+          setTransitioningNodes(new Set());
+        }
+      }
     }
   }, [step]);
 
@@ -26,8 +65,8 @@ const BSTViewer = ({ step, algorithm = '' }) => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
         setDimensions({
-          width: Math.max(800, width),
-          height: Math.max(500, height - 100)
+          width: Math.max(600, width),
+          height: Math.max(400, height)
         });
       }
     };
@@ -41,30 +80,28 @@ const BSTViewer = ({ step, algorithm = '' }) => {
     return <div className="bst-viewer">No tree data to display</div>;
   }
 
-  // Use currentTree if available, otherwise use step.tree
   const tree = currentTree || step.tree;
   const { currentNode, action, insertedValue, stepType, path = [] } = step;
 
-  // Check if this is a delete operation
   const isDeleteOperation = stepType === 'delete' || action === 'delete';
 
-  // Function to check if a node exists in the tree
+  // Check if node exists in tree
   const nodeExists = (node, value) => {
     if (!node) return false;
     if (node.value === value) return true;
     return nodeExists(node.left, value) || nodeExists(node.right, value);
   };
 
-  // Calculate tree dimensions for proper SVG sizing
+  // Calculate tree dimensions for proper sizing
   const calculateTreeDimensions = (node, level = 0) => {
     if (!node) return { depth: 0, width: 0, nodeCount: 0, maxLevelWidth: 0 };
-    
+
     const left = calculateTreeDimensions(node.left, level + 1);
     const right = calculateTreeDimensions(node.right, level + 1);
-    
+
     const currentWidth = 1 + left.width + right.width;
     const maxLevelWidth = Math.max(currentWidth, left.maxLevelWidth, right.maxLevelWidth);
-    
+
     return {
       depth: Math.max(level, left.depth, right.depth),
       width: currentWidth,
@@ -73,268 +110,319 @@ const BSTViewer = ({ step, algorithm = '' }) => {
     };
   };
 
-  const { depth, width, nodeCount, maxLevelWidth } = useMemo(() => 
-    calculateTreeDimensions(tree), [tree, treeKey]);
-  
-  // Dynamic SVG dimensions based on tree size
-  const horizontalPadding = 100;
-  const verticalPadding = 80;
-  
-  const svgWidth = Math.max(
-    dimensions.width, 
-    (maxLevelWidth * 120) + horizontalPadding * 2
-  );
-  const svgHeight = Math.max(
-    dimensions.height, 
-    (depth + 1) * 120 + verticalPadding * 2
-  );
+  const { depth, width, nodeCount, maxLevelWidth } = useMemo(() =>
+    calculateTreeDimensions(tree), [tree]);
 
-  const renderTree = (node, x, y, level = 0, parentX = null, parentY = null) => {
-    if (!node) return null;
-    
-    // For delete operations, check if the node being deleted still exists in the tree
-    const isNodeBeingDeleted = isDeleteOperation && currentNode === node.value;
-    const nodeStillExists = nodeExists(tree, node.value);
-    
-    // If this is a delete operation and the node doesn't exist in the current tree, don't render it
-    if (isDeleteOperation && !nodeStillExists) {
-      return null;
+  // Dynamic spacing based on tree size
+  const horizontalPadding = 60;
+  const verticalPadding = 60;
+  const nodeRadius = 25;
+  const levelHeight = 100;
+
+  // Calculate node positions
+  const calculateNodePositions = (node, x, y, level = 0, positions = {}) => {
+    if (!node) return positions;
+
+    const horizontalSpacing = Math.max(80, 180 / Math.pow(level + 1, 0.7));
+
+    positions[node.value] = { x, y, level, node };
+
+    if (node.left) {
+      calculateNodePositions(node.left, x - horizontalSpacing, y + levelHeight, level + 1, positions);
     }
-    
-    const isCurrent = currentNode && node.value === currentNode && nodeStillExists;
-    const isNewlyInserted = stepType === 'insert' && insertedValue === node.value;
-    const isInPath = path.includes(node.value) && nodeStillExists;
-    const isTraversed = stepType === 'traverse' && path.includes(node.value);
-    
-    // Calculate dynamic horizontal spacing
-    const baseSpacing = 150;
-    const levelReduction = level * 0.15;
-    const widthFactor = Math.max(0.5, 1 - (maxLevelWidth / 20));
-    const horizontalSpacing = baseSpacing * widthFactor / (1 + levelReduction);
-    
-    const nodeElements = [];
+    if (node.right) {
+      calculateNodePositions(node.right, x + horizontalSpacing, y + levelHeight, level + 1, positions);
+    }
 
-    // Draw connections first
-    if (parentX !== null && parentY !== null) {
-      const isPathConnection = path.includes(node.value) && path[path.indexOf(node.value) - 1] === (node.parentValue || path[0]);
-      
-      // Only draw connection if both parent and child exist
-      if (nodeStillExists) {
-        nodeElements.push(
-          <line 
-            key={`line-${node.value}-${x}-${y}-${treeKey}`}
-            x1={parentX} 
-            y1={parentY + 25} 
-            x2={x} 
-            y2={y - 25} 
-            stroke={isPathConnection ? "#f1c40f" : "#4a5568"}
+    return positions;
+  };
+
+  // Find root position
+  const findRootPosition = () => {
+    const centerX = Math.max(400, (maxLevelWidth * 70) / 2);
+    const startY = 60;
+    return { x: centerX, y: startY };
+  };
+
+  const rootPos = findRootPosition();
+  const nodePositions = tree ? calculateNodePositions(tree, rootPos.x, rootPos.y) : {};
+
+  // Calculate SVG dimensions based on content
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  Object.values(nodePositions).forEach(pos => {
+    minX = Math.min(minX, pos.x - nodeRadius - 10);
+    maxX = Math.max(maxX, pos.x + nodeRadius + 10);
+    minY = Math.min(minY, pos.y - nodeRadius - 10);
+    maxY = Math.max(maxY, pos.y + nodeRadius + 10);
+  });
+
+  const svgWidth = Math.max(800, (maxX - minX) + horizontalPadding * 2);
+  const svgHeight = Math.max(500, (maxY - minY) + verticalPadding * 2);
+  const viewBoxX = Math.max(0, minX - horizontalPadding);
+  const viewBoxY = Math.max(0, minY - verticalPadding);
+
+  const getNodeColor = (nodeValue, isCurrent, isNewlyInserted, isInPath, isTraversed, actionType) => {
+    if (transitioningNodes.has(nodeValue)) return '#e74c3c';
+    if (isNewlyInserted) return '#2ecc71';
+    if (actionType === 'delete' && isCurrent) return '#e74c3c';
+    if (isInPath && actionType === 'search') return '#f39c12';
+    if (isInPath && actionType === 'traverse') return '#3498db';
+    if (isCurrent && actionType === 'insert') return '#2ecc71';
+    if (isCurrent && actionType === 'rotate') return '#9b59b6';
+    if (isCurrent) return '#3498db';
+    return '#27ae60';
+  };
+
+  const getNodeStroke = (nodeValue, isCurrent, isNewlyInserted, isInPath) => {
+    if (transitioningNodes.has(nodeValue)) return '#c0392b';
+    if (isNewlyInserted) return '#27ae60';
+    if (isInPath) return '#f39c12';
+    if (isCurrent) return '#f39c12';
+    return '#2ecc71';
+  };
+
+  const getHighlightColor = (isCurrent, isNewlyInserted, isInPath, actionType) => {
+    if (isNewlyInserted) return '#2ecc71';
+    if (actionType === 'delete') return '#e74c3c';
+    if (isInPath) return '#f1c40f';
+    return '#3498db';
+  };
+
+  // Render connections
+  const renderConnections = () => {
+    const connections = [];
+    const added = new Set();
+
+    const addConnection = (parent, child) => {
+      const key = `${parent.value}-${child.value}`;
+      if (added.has(key)) return;
+      added.add(key);
+
+      const parentPos = nodePositions[parent.value];
+      const childPos = nodePositions[child.value];
+
+      if (parentPos && childPos) {
+        const isPathConnection = path.includes(child.value) && path[path.indexOf(child.value) - 1] === parent.value;
+        const isTransitioning = transitioningNodes.has(child.value);
+
+        connections.push(
+          <motion.line
+            key={`line-${parent.value}-${child.value}`}
+            x1={parentPos.x}
+            y1={parentPos.y + nodeRadius - 5}
+            x2={childPos.x}
+            y2={childPos.y - nodeRadius + 5}
+            stroke={isTransitioning ? '#e74c3c' : (isPathConnection ? "#f1c40f" : "#718096")}
             strokeWidth={isPathConnection ? 3 : 2}
-            strokeDasharray={isPathConnection ? "5,3" : "none"}
+            strokeDasharray={isPathConnection ? "6,3" : "none"}
+            initial={{ opacity: 0, pathLength: 0 }}
+            animate={{ opacity: 1, pathLength: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           />
         );
       }
-    }
+    };
 
-    // Render child nodes first
-    if (node.left && nodeExists(tree, node.left.value)) {
-      const leftX = x - horizontalSpacing;
-      const leftY = y + 100;
-      const leftResult = renderTree(
-        { ...node.left, parentValue: node.value }, 
-        leftX, 
-        leftY, 
-        level + 1, 
-        x, 
-        y
-      );
-      if (leftResult) nodeElements.push(...leftResult);
-    }
+    const traverse = (node) => {
+      if (!node) return;
+      if (node.left) {
+        addConnection(node, node.left);
+        traverse(node.left);
+      }
+      if (node.right) {
+        addConnection(node, node.right);
+        traverse(node.right);
+      }
+    };
 
-    if (node.right && nodeExists(tree, node.right.value)) {
-      const rightX = x + horizontalSpacing;
-      const rightY = y + 100;
-      const rightResult = renderTree(
-        { ...node.right, parentValue: node.value }, 
-        rightX, 
-        rightY, 
-        level + 1, 
-        x, 
-        y
-      );
-      if (rightResult) nodeElements.push(...rightResult);
-    }
+    traverse(tree);
+    return connections;
+  };
 
-    // Only render the node if it exists in the current tree
-    if (nodeStillExists) {
-      // Render current node
-      const nodeGroup = (
-        <g key={`node-${node.value}-${x}-${y}-${treeKey}`}>
-          {/* Node circle */}
+  // Render nodes
+  const renderNodes = () => {
+    const nodes = [];
+
+    Object.entries(nodePositions).forEach(([value, pos]) => {
+      const node = pos.node;
+
+      // Skip if node is marked as deleted
+      if (deletedNodes.has(parseInt(value)) || deletedNodes.has(value)) {
+        return;
+      }
+
+      const isCurrent = currentNode && node.value === currentNode;
+      const isNewlyInserted = stepType === 'insert' && insertedValue === node.value;
+      const isInPath = path && path.includes(node.value);
+      const isBeingDeleted = transitioningNodes.has(node.value);
+      const nodeExistsInTree = nodeExists(tree, node.value);
+
+      if (!nodeExistsInTree && isBeingDeleted) {
+        // Render fading out node
+        nodes.push(
+          <motion.g
+            key={`node-${node.value}`}
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <circle
+              cx={pos.x}
+              cy={pos.y}
+              r={nodeRadius}
+              fill="#e74c3c"
+              stroke="#c0392b"
+              strokeWidth="3"
+            />
+            <text
+              x={pos.x}
+              y={pos.y + 5}
+              textAnchor="middle"
+              fill="white"
+              fontSize="14"
+              fontWeight="bold"
+            >
+              {node.value}
+            </text>
+            <motion.text
+              x={pos.x}
+              y={pos.y - 15}
+              textAnchor="middle"
+              fill="#e74c3c"
+              fontSize="10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Deleting...
+            </motion.text>
+          </motion.g>
+        );
+        return;
+      }
+
+      if (!nodeExistsInTree && !isBeingDeleted) return;
+
+      const nodeColor = getNodeColor(node.value, isCurrent, isNewlyInserted, isInPath, action);
+      const nodeStroke = getNodeStroke(node.value, isCurrent, isNewlyInserted, isInPath);
+      const highlightColor = getHighlightColor(isCurrent, isNewlyInserted, isInPath, action);
+
+      // Determine if this node is being replaced
+      const isBeingReplaced = step.action === 'delete-replacing' && step.currentNode === node.value;
+
+      nodes.push(
+        <motion.g
+          key={`node-${node.value}`}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            x: isBeingReplaced ? [0, 10, 0] : 0,
+            y: isBeingReplaced ? [0, -10, 0] : 0
+          }}
+          transition={{
+            duration: 0.4,
+            delay: pos.level * 0.05,
+            type: "spring",
+            stiffness: 400,
+            damping: 20
+          }}
+          layout
+        >
           <motion.circle
-            cx={x}
-            cy={y}
-            r={25}
-            fill={getNodeColor(node, isCurrent, isNewlyInserted, isInPath, isTraversed, action)}
-            stroke={getNodeStroke(node, isCurrent, isNewlyInserted, isInPath)}
+            cx={pos.x}
+            cy={pos.y}
+            r={nodeRadius}
+            fill={nodeColor}
+            stroke={nodeStroke}
             strokeWidth="3"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: level * 0.1 }}
+            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            animate={
+              (isCurrent || isNewlyInserted || isBeingReplaced) && !transitioningNodes.has(node.value)
+                ? {
+                  scale: [1, 1.08, 1],
+                  transition: { duration: 0.6, repeat: isCurrent ? Infinity : 1, repeatDelay: 0.4 }
+                }
+                : {}
+            }
           />
-          
-          {/* Node value */}
-          <text 
-            x={x} 
-            y={y + 5} 
-            textAnchor="middle" 
-            fill="white" 
-            fontSize="14" 
+
+          <text
+            x={pos.x}
+            y={pos.y + 5}
+            textAnchor="middle"
+            fill="white"
+            fontSize="14"
             fontWeight="bold"
             pointerEvents="none"
           >
             {node.value}
           </text>
 
-          {/* Height indicator for AVL trees */}
-          {node.height !== undefined && (
-            <text 
-              x={x} 
-              y={y - 35} 
-              textAnchor="middle" 
-              fill="#a0aec0" 
-              fontSize="10"
-              pointerEvents="none"
+          {/* Show "Replacing" label for nodes being replaced */}
+          {isBeingReplaced && (
+            <motion.text
+              x={pos.x}
+              y={pos.y - 20}
+              textAnchor="middle"
+              fill="#f39c12"
+              fontSize="9"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              h:{node.height}
-            </text>
+              Replacing...
+            </motion.text>
           )}
 
-          {/* Balance factor for AVL trees */}
-          {node.balance !== undefined && (
-            <text 
-              x={x} 
-              y={y - 45} 
-              textAnchor="middle" 
-              fill="#e53e3e" 
-              fontSize="10"
-              pointerEvents="none"
-            >
-              b:{node.balance}
-            </text>
+          {(isCurrent || isNewlyInserted || isInPath) && !transitioningNodes.has(node.value) && (
+            <motion.circle
+              cx={pos.x}
+              cy={pos.y}
+              r={nodeRadius + 6}
+              fill="transparent"
+              stroke={highlightColor}
+              strokeWidth="2"
+              strokeDasharray="6,4"
+              initial={{ scale: 0.9, opacity: 0.7 }}
+              animate={{ scale: 1.2, opacity: 0 }}
+              transition={{
+                duration: 0.8,
+                repeat: (isCurrent || isNewlyInserted) ? Infinity : 0,
+                repeatDelay: 0.3
+              }}
+            />
           )}
 
-          {/* Frequency for BST */}
-          {node.frequency > 1 && (
-            <text 
-              x={x + 20} 
-              y={y - 10} 
-              textAnchor="middle" 
-              fill="#f1c40f" 
+          {node.frequency && node.frequency > 1 && (
+            <text
+              x={pos.x + 18}
+              y={pos.y - 12}
+              textAnchor="middle"
+              fill="#f1c40f"
               fontSize="10"
-              pointerEvents="none"
+              fontWeight="bold"
             >
               x{node.frequency}
             </text>
           )}
-
-          {/* Highlight for current operation */}
-          {(isCurrent || isNewlyInserted || isInPath) && (
-            <motion.circle
-              cx={x}
-              cy={y}
-              r={32}
-              fill="transparent"
-              stroke={getHighlightColor(isCurrent, isNewlyInserted, isInPath, action)}
-              strokeWidth="2"
-              strokeDasharray="5,5"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1.2, opacity: 1 }}
-              transition={{ 
-                duration: 0.6, 
-                repeat: (isCurrent || isNewlyInserted) ? Infinity : 0,
-                repeatType: "reverse" 
-              }}
-            />
-          )}
-
-          {/* Path animation for search/traverse */}
-          {isInPath && (
-            <motion.circle
-              cx={x}
-              cy={y}
-              r={28}
-              fill="transparent"
-              stroke="#f1c40f"
-              strokeWidth="1"
-              initial={{ scale: 1, opacity: 0.7 }}
-              animate={{ scale: 1.3, opacity: 0 }}
-              transition={{ 
-                duration: 1.5, 
-                repeat: Infinity,
-                repeatDelay: 0.5
-              }}
-            />
-          )}
-        </g>
+        </motion.g>
       );
+    });
 
-      nodeElements.push(nodeGroup);
-    }
-    
-    return nodeElements;
+    return nodes;
   };
 
-  const getNodeColor = (node, isCurrent, isNewlyInserted, isInPath, isTraversed, action) => {
-    if (isNewlyInserted) return '#e74c3c';
-    if (action === 'delete' && isCurrent) return '#e74c3c';
-    if (isInPath && action === 'search') return '#9b59b6';
-    if (isInPath && action === 'traverse') return '#3498db';
-    if (isCurrent && action === 'insert') return '#f1c40f';
-    if (isCurrent && action === 'rotate') return '#9b59b6';
-    if (isCurrent) return '#3498db';
-    return '#2ecc71';
-  };
-
-  const getNodeStroke = (node, isCurrent, isNewlyInserted, isInPath) => {
-    if (isNewlyInserted) return '#c0392b';
-    if (isInPath) return '#f39c12';
-    if (isCurrent) return '#f39c12';
-    return '#27ae60';
-  };
-
-  const getHighlightColor = (isCurrent, isNewlyInserted, isInPath, action) => {
-    if (isNewlyInserted) return '#e74c3c';
-    if (action === 'delete') return '#e74c3c';
-    if (isInPath) return '#f1c40f';
-    return '#3498db';
-  };
-
-  // Calculate root position
-  const getRootPosition = () => {
-    const centerX = svgWidth / 2;
-    const startY = 80;
-    
-    if (tree && width > 0) {
-      return {
-        x: Math.max(horizontalPadding, Math.min(svgWidth - horizontalPadding, centerX)),
-        y: startY
-      };
-    }
-    
-    return { x: centerX, y: startY };
-  };
-
-  const rootPos = getRootPosition();
-
-  // Verify if the deleted node is actually gone
   const deletedNodeStillExists = currentNode && nodeExists(tree, currentNode);
-  
+
   return (
-    <div className="bst-viewer" ref={containerRef} key={`container-${treeKey}`}>
+    <div className="bst-viewer" ref={containerRef}>
       <div className="tree-info">
         <h4>{algorithm.replace(/-/g, ' ').toUpperCase()}</h4>
         {stepType === 'insert' && insertedValue && (
-          <p>Inserting value: <strong>{insertedValue}</strong></p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            Inserting value: <strong>{insertedValue}</strong>
+          </motion.p>
         )}
         {stepType === 'bulk-insert' && (
           <p>Bulk insertion in progress</p>
@@ -343,63 +431,69 @@ const BSTViewer = ({ step, algorithm = '' }) => {
           <p>Searching for: <strong>{currentNode}</strong></p>
         )}
         {stepType === 'delete' && currentNode && (
-          <p className="delete-message">
-            Deleting node: <strong>{currentNode}</strong> - 
-            {deletedNodeStillExists ? ' Node still exists!' : ' Node successfully removed!'}
-          </p>
+          <motion.p
+            className="delete-message"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            Deleting node: <strong>{currentNode}</strong> -
+            {deletedNodeStillExists ? ' Node found, removing...' : ' Node successfully removed!'}
+          </motion.p>
         )}
         {stepType === 'traverse' && (
-          <p>Traversal: <strong>{algorithm.includes('inorder') ? 'Inorder' : algorithm.includes('preorder') ? 'Preorder' : 'Postorder'}</strong></p>
+          <p>Traversal: <strong>
+            {algorithm.includes('inorder') ? 'Inorder' :
+              algorithm.includes('preorder') ? 'Preorder' :
+                algorithm.includes('postorder') ? 'Postorder' : 'Traversal'}
+          </strong></p>
         )}
-        {action && <p>Action: <strong>{action}</strong></p>}
+        {action && action !== 'traverse' && <p>Action: <strong>{action}</strong></p>}
         {path && path.length > 0 && (
-          <p>Path: <strong>{path.join(' → ')}</strong></p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Path: <strong>{path.join(' → ')}</strong>
+          </motion.p>
         )}
-        <p>Total nodes: <strong>{nodeCount}</strong></p>
+        <p>Total nodes: <strong>{nodeCount}</strong> | Tree height: <strong>{depth + 1}</strong></p>
       </div>
-      
-      <ZoomPanWrapper 
-        initialScale={nodeCount > 8 ? 0.8 : 1}
-        minScale={0.3}
-        maxScale={3}
-        className="bst-zoom-wrapper"
-      >
-        <svg 
-          ref={svgRef}
-          width={svgWidth} 
-          height={svgHeight} 
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          style={{ 
-            maxWidth: '100%', 
-            height: 'auto',
-            minHeight: '400px'
+
+      {/* Scrollable container instead of ZoomPanWrapper */}
+      <div className="bst-scroll-container">
+        <div
+          className="bst-svg-wrapper"
+          style={{
+            minWidth: `${svgWidth}px`,
+            minHeight: `${svgHeight}px`
           }}
-          key={`svg-${treeKey}`}
         >
-          {/* Background grid */}
-          <defs>
-            <pattern id="smallGrid" width="50" height="50" patternUnits="userSpaceOnUse">
-              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#2d3748" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#smallGrid)" />
-          
-          {tree ? renderTree(tree, rootPos.x, rootPos.y) : (
-            <text 
-              x={svgWidth / 2} 
-              y={svgHeight / 2} 
-              textAnchor="middle" 
-              fill="#a0aec0"
-              fontSize="16"
-            >
-              Empty Tree
-            </text>
-          )}
-        </svg>
-      </ZoomPanWrapper>
+          <svg
+            width={svgWidth}
+            height={svgHeight}
+            viewBox={`${viewBoxX} ${viewBoxY} ${svgWidth} ${svgHeight}`}
+            className="bst-svg"
+            style={{ display: 'block' }}
+          >
+            <defs>
+              <pattern id="smallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#2d3748" strokeWidth="0.5" />
+              </pattern>
+              <filter id="nodeShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+              </filter>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#smallGrid)" />
+            <g filter="url(#nodeShadow)">
+              {renderConnections()}
+              {renderNodes()}
+            </g>
+          </svg>
+        </div>
+      </div>
 
       <div className="tree-controls">
-        <small>Use mouse wheel to zoom • Click and drag to pan • Double click to reset view</small>
+        <small>🔍 Use scroll wheel to zoom • Click and drag to pan • Double click to reset</small>
       </div>
     </div>
   );

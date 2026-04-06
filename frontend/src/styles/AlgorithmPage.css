@@ -569,3 +569,228 @@
   background: #4a5568;
   transform: translateY(-2px);
 }
+
+/* Speed control styling */
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  background: #1a202c;
+  border-radius: 8px;
+  border: 1px solid #4a5568;
+}
+
+.speed-control label {
+  color: #cbd5e0;
+  font-size: 12px;
+}
+
+.speed-control input {
+  width: 120px;
+  cursor: pointer;
+  background: #2d3748;
+}
+
+.speed-control span {
+  color: #4299e1;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 45px;
+}
+
+@media (max-width: 768px) {
+  .speed-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .speed-control input {
+    flex: 1;
+  }
+}
+
+/* Heap specific styles */
+.heap-info {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.heap-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.run-algorithm-btn {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.run-algorithm-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+.run-algorithm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reset-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* Control group for heap buttons */
+.control-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Animation for heap operations */
+@keyframes heapInsert {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes heapSwap {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Add to AlgorithmPage.css */
+
+/* Sorting Controls Styles */
+.sorting-controls-wrapper {
+  width: 100%;
+}
+
+.sorting-controls-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.custom-array-input-sorting {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.custom-array-field {
+  padding: 8px 12px;
+  border: 1px solid #4a5568;
+  border-radius: 5px;
+  background: #1a202c;
+  color: white;
+  font-size: 14px;
+  width: 180px;
+}
+
+.custom-array-field:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 5px rgba(66, 153, 225, 0.5);
+}
+
+.custom-array-field::placeholder {
+  color: #718096;
+  font-size: 12px;
+}
+
+.apply-array-btn {
+  padding: 8px 16px;
+  background: #48bb78;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.apply-array-btn:hover {
+  background: #38a169;
+}
+
+.run-sorting-btn {
+  padding: 8px 16px;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.run-sorting-btn:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.run-sorting-btn:disabled {
+  background: #4a5568;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sorting-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .custom-array-input-sorting {
+    width: 100%;
+  }
+  
+  .custom-array-field {
+    flex: 1;
+    width: auto;
+  }
+  
+  .apply-array-btn,
+  .run-sorting-btn {
+    flex: 1;
+  }
+}

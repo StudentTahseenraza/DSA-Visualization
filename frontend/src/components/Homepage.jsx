@@ -1,4 +1,4 @@
-// frontend/src/components/Homepage.jsx
+// frontend/src/components/Homepage.jsx (updated)
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import Sorting from "../../public/lottie/sorting.json";
@@ -14,13 +14,10 @@ import dpAnimation from "../../public/lottie/sorting.json";
 import greedyAnimation from "../../public/lottie/sorting.json";
 import hashingAnimation from "../../public/lottie/sorting.json";
 import stringAnimation from "../../public/lottie/sorting.json";
-import comparisonAnimation from "../../public/lottie/sorting.json"; // New Lottie file for Algorithm Compare
+import comparisonAnimation from "../../public/lottie/sorting.json";
+import aiAssistantAnimation from "../../public/lottie/sorting.json"; // Using existing animation
 import "../styles/Homepage.css";
 import ThemeToggle from "./ThemeToggle";
-
-// Import new animations for AI features (you can reuse existing or create new ones)
-import aiCodeAnimation from "../../public/lottie/sorting.json"; // Replace with AI-specific animation
-import aiDebugAnimation from "../../public/lottie/sorting.json"; // Replace with debug-specific animation
 
 const Homepage = () => {
   const algorithmCategories = [
@@ -29,7 +26,7 @@ const Homepage = () => {
       description: "Insertion, Deletion, Searching...",
       animation: arrayAnimation,
       color: "#ff6b6b",
-      path: "/array-operations", // Change this from "/arrays"
+      path: "/array-operations",
       algorithms: [
         "Insertion",
         "Deletion",
@@ -174,36 +171,6 @@ const Homepage = () => {
       ],
     },
     {
-      title: "Strings",
-      description: "Pattern Matching, Manipulation...",
-      animation: stringAnimation,
-      color: "#e17055",
-      path: "/strings",
-      algorithms: [
-        "String Reversal",
-        "Palindrome Check",
-        "KMP Algorithm",
-        "Rabin-Karp Algorithm",
-        "Longest Common Substring",
-        "Anagram Detection",
-      ],
-    },
-    {
-      title: "Recursion",
-      description: "Tower of Hanoi, N-Queens...",
-      animation: recursionAnimation,
-      color: "#fdcb6e",
-      path: "/recursion",
-      algorithms: [
-        "Tower of Hanoi",
-        "N-Queens Problem",
-        "Sudoku Solver",
-        "Rat in a Maze",
-        "Permutations",
-        "Subsets",
-      ],
-    },
-    {
       title: "Backtracking",
       description: "Tower of Hanoi, N-Queens...",
       animation: recursionAnimation,
@@ -279,21 +246,6 @@ const Homepage = () => {
       ],
     },
     {
-      title: "Mathematical Algorithms",
-      description: "Number Theory, Combinatorics...",
-      animation: stringAnimation,
-      color: "#e17055",
-      path: "/mathematical-algorithms",
-      algorithms: [
-        "Greatest Common Divisor",
-        "Sieve of Eratosthenes",
-        "Modular Exponentiation",
-        "Fibonacci Numbers",
-        "Prime Factorization",
-        "Combinatorial Algorithms",
-      ],
-    },
-    {
       title: "Complexity Analysis",
       description: "Complexity, Comparisons...",
       animation: stringAnimation,
@@ -310,11 +262,10 @@ const Homepage = () => {
     },
     {
       title: "Algorithm Compare",
-      description:
-        "Compare algorithms, Visualize differences, Performance metrics...",
+      description: "Compare algorithms, Visualize differences, Performance metrics...",
       animation: comparisonAnimation,
       color: "#6c5ce7",
-      path: "/algorithm-compare", // This will be handled as a special category
+      path: "/algorithm-compare",
       algorithms: [
         "Compare algorithms",
         "Visualize differences",
@@ -324,57 +275,23 @@ const Homepage = () => {
         "Efficiency metrics",
       ],
     },
+    // NEW AI CODE ASSISTANT CARD
     {
-      title: "🔍 AI Debugger Mode",
-      description: "Find bugs in your algorithm logic automatically!",
-      longDescription: "Paste your faulty algorithm and AI pinpoints the exact error, explains why it's wrong, and suggests fixes.",
-      animation: aiDebugAnimation,
-      color: "#e74c3c", // Red for debug
-      path: "/ai-debugger",
-      algorithms: [ // Added missing algorithms array
-        "Bug Detection",
-        "Error Analysis",
-        "Fix Suggestions",
-        "Step-by-step Debugging",
-        "Logic Validation",
-        "Code Correction"
+      title: "AI Code Assistant",
+      description: "Generate, debug & visualize code using AI",
+      animation: aiAssistantAnimation,
+      color: "#a855f7",
+      path: "/ai-code",
+      algorithms: [
+        "AI Code Explanation",
+        "Code Execution",
+        "Code Visualization",
+        "Debug Assistance",
+        "Complexity Analysis",
+        "Optimization Tips",
       ],
-      features: [
-        "Detects logical errors",
-        "Shows first failure step",
-        "Compares with expected behavior",
-        "Explains why output diverges",
-        "Suggests corrections",
-        "Perfect for debugging assignments"
-      ],
-      tagline: "🐛 First algorithm error analyzer!",
-      isNew: true
-    },
-    {
-      title: "🤖 AI Code Visualizer",
-      description: "Paste any code (Java/C++/Python) and watch it come alive!",
-      longDescription: "Upload your own code and our AI engine generates step-by-step visualization of YOUR exact logic. Works with any algorithm!",
-      animation: aiCodeAnimation,
-      color: "#9b59b6", // Purple for AI
-      path: "/ai-code-visualizer",
-      algorithms: [ // Added missing algorithms array
-        "Java Visualization",
-        "C++ Visualization",
-        "Python Visualization",
-        "Step-by-step Execution",
-        "Variable State Tracking",
-        "Algorithm Animation"
-      ],
-      features: [
-        "Supports Java, C++, Python",
-        "Auto-generates visualization steps",
-        "Shows variable states in real-time",
-        "Highlights comparisons & swaps",
-        "Step-by-step execution",
-        "Works with ANY algorithm logic"
-      ],
-      tagline: "✨ Unique: No other visualizer does this!",
-      isNew: true
+      isNew: true,
+      isAIFeature: false, // Keep in regular grid but with special styling
     },
   ];
 
@@ -398,48 +315,51 @@ const Homepage = () => {
           </div>
         </div>
       </div>
+
       <div className="algorithm-grid">
-        {safeAlgorithmCategories.map((category, index) => (
-          <Link
-            to={category.path}
-            key={index}
-            className="algorithm-card"
-            style={{ "--card-color": category.color }}
-          >
-            <div className="card-animation">
-              <Lottie
-                animationData={category.animation}
-                loop={true}
-                autoplay={true}
-                style={{ height: 120 }}
-              />
-            </div>
-            <div className="card-content">
-              <h3>{category.title}</h3>
-              <p>{category.description}</p>
-              {category.algorithms && category.algorithms.length > 0 && (
-                <div className="algorithm-tags">
-                  {category.algorithms.slice(0, 3).map((algo, i) => (
-                    <span key={i} className="algorithm-tag">
-                      {algo}
-                    </span>
-                  ))}
-                  {category.algorithms.length > 3 && (
-                    <span className="algorithm-tag">
-                      +{category.algorithms.length - 3} more
-                    </span>
-                  )}
-                </div>
-              )}
-              {category.isNew && (
-                <span className="new-badge">NEW</span>
-              )}
-            </div>
-            <div className="card-explore">
-              <span>Explore →</span>
-            </div>
-          </Link>
-        ))}
+        {safeAlgorithmCategories
+          .filter(cat => !cat.isAIFeature)
+          .map((category, index) => (
+            <Link
+              to={category.path}
+              key={index}
+              className={`algorithm-card ${category.isNew ? 'new-ai-card' : ''}`}
+              style={{ "--card-color": category.color }}
+            >
+              <div className="card-animation">
+                <Lottie
+                  animationData={category.animation}
+                  loop={true}
+                  autoplay={true}
+                  style={{ height: 120 }}
+                />
+              </div>
+              <div className="card-content">
+                <h3>{category.title}</h3>
+                <p>{category.description}</p>
+                {category.algorithms && category.algorithms.length > 0 && (
+                  <div className="algorithm-tags">
+                    {category.algorithms.slice(0, 3).map((algo, i) => (
+                      <span key={i} className="algorithm-tag">
+                        {algo}
+                      </span>
+                    ))}
+                    {category.algorithms.length > 3 && (
+                      <span className="algorithm-tag">
+                        +{category.algorithms.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                )}
+                {category.isNew && (
+                  <span className="new-badge">✨ NEW</span>
+                )}
+              </div>
+              <div className="card-explore">
+                <span>Explore →</span>
+              </div>
+            </Link>
+          ))}
       </div>
     </div>
   );

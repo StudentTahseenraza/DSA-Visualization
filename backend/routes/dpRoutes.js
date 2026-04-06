@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const dpController = require("../controllers/dpController");
+const { handleDPAnalysis } = require('../controllers/dpAnalysisController');
 
-router.post("/:algorithm", dpController.handleDPAlgorithm);
+router.post('/:algorithm', handleDPAnalysis);
 
 module.exports = router;

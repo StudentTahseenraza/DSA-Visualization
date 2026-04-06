@@ -1,3 +1,4 @@
+// controllers/bstController.js - Updated
 const { bstOperations, avlOperations } = require("../index");
 
 exports.handleBSTOperation = (req, res) => {
@@ -13,6 +14,7 @@ exports.handleBSTOperation = (req, res) => {
 
     const { value, treeState, options = {} } = req.body;
 
+    // Handle bulk-insert specifically
     if (operation === "bulk-insert") {
       if (!value || !Array.isArray(value)) {
         return res.status(400).json({
@@ -21,9 +23,21 @@ exports.handleBSTOperation = (req, res) => {
           receivedValue: value,
         });
       }
-    } else if (operation.startsWith("traverse-")) {
-      // No value validation needed for traverse operations
-    } else if (operation !== "traverse" && value === undefined) {
+      
+      // Call bstOperations with insert operation and array of values
+      const result = bstOperations("insert", value, treeState, options);
+      return res.json(result);
+    }
+    
+    // Handle traverse-* operations
+    if (operation.startsWith("traverse-")) {
+      const order = operation.replace("traverse-", "");
+      const result = bstOperations("traverse", null, treeState, { order });
+      return res.json(result);
+    }
+
+    // Handle regular operations
+    if (operation !== "traverse" && value === undefined) {
       return res.status(400).json({
         error: "Value is required for this operation",
         operation: operation,
@@ -49,7 +63,7 @@ exports.handleBSTOperation = (req, res) => {
     } else {
       let bstOperation = operation;
       let bstValue = value;
-      let bstOptions = {};
+      let bstOptions = options;
 
       if (operation === "bulk-insert") {
         bstOperation = "insert";
@@ -68,10 +82,8 @@ exports.handleBSTOperation = (req, res) => {
       
       // For delete operations, ensure we're returning the updated tree
       if (operation === "delete" && result && result.steps) {
-        // Make sure the last step has the final tree state
         const lastStep = result.steps[result.steps.length - 1];
         if (lastStep && !lastStep.tree) {
-          // If the last step doesn't have a tree, use the result.tree
           lastStep.tree = result.tree;
         }
       }
