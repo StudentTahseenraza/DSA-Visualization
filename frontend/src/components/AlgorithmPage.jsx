@@ -104,6 +104,7 @@ const AlgorithmPage = () => {
   const [linkedList, setLinkedList] = useState(null);
   const [listValue, setListValue] = useState(""); // Keep as string initially
   const [listOperation, setListOperation] = useState("insert");
+  const [listType, setListType] = useState("singly");
 
   const [heap, setHeap] = useState(null);
   const [heapValue, setHeapValue] = useState("");
@@ -221,8 +222,8 @@ const AlgorithmPage = () => {
   // const { isDarkMode } = useTheme();
 
 
-  // const BASE_URL = "http://localhost:5000/api";
-  const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
+  const BASE_URL = "http://localhost:5000/api";
+  // const BASE_URL = "https://dsa-visualization-j0uo.onrender.com/api";
 
 
   // Set default algorithm based on category
@@ -2730,10 +2731,11 @@ const AlgorithmPage = () => {
         );
 
       case "linked-list":
-        console.log('Rendering LinkedListViewer with step:', currentStepData);
+        console.log('Rendering LinkedListViewer with step:', currentStepData, 'listType:', listType);
         return (
           <LinkedListViewer
             step={currentStepData}
+            listType={listType}
           />
         );
 
@@ -3213,25 +3215,43 @@ const AlgorithmPage = () => {
         return (
           <>
             <select
-              value={selectedAlgorithm}
-              onChange={(e) => setSelectedAlgorithm(e.target.value)}
+              value={listType}
+              onChange={(e) => {
+                setListType(e.target.value);
+                setLinkedList(null);
+                setAlgorithmData({ steps: [], pseudocode: [], explanations: [] });
+                setCurrentStep(0);
+                toast.info(`Switched to ${e.target.value === 'doubly' ? 'Doubly' : 'Singly'} Linked List`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                  theme: "colored",
+                });
+              }}
+              className="list-type-select"
+              style={{ background: '#4299e1', fontWeight: 'bold' }}
             >
-              <option value="singly-linked-list">Singly Linked List</option>
-              <option value="doubly-linked-list">Doubly Linked List</option>
+              <option value="singly">Singly Linked List</option>
+              <option value="doubly">Doubly Linked List</option>
             </select>
+
             <select
               value={listOperation}
               onChange={(e) => {
                 setListOperation(e.target.value);
-                // Reset listValue when switching operations
                 setListValue("");
               }}
             >
-              <option value="insert">Insert Single</option>
+              <option value="insert">Insert at End</option>
+              {listType === "doubly" && (
+                <option value="insert-at-beginning">Insert at Beginning</option>
+              )}
               <option value="bulk-insert">Bulk Insert</option>
               <option value="delete">Delete</option>
               <option value="search">Search</option>
-              <option value="traverse">Traverse</option>
+              <option value="traverse">Traverse Forward</option>
+              {listType === "doubly" && (
+                <option value="traverse-backward">Traverse Backward</option>
+              )}
             </select>
 
             {listOperation === "bulk-insert" ? (
@@ -3242,7 +3262,7 @@ const AlgorithmPage = () => {
                 placeholder="Enter values (comma separated: 5,3,7,2,4)"
                 style={{ flex: 1 }}
               />
-            ) : listOperation !== "traverse" ? (
+            ) : listOperation !== "traverse" && listOperation !== "traverse-backward" ? (
               <input
                 type="number"
                 value={listValue}
@@ -3254,10 +3274,23 @@ const AlgorithmPage = () => {
             <button onClick={handleListOperation} disabled={isLoading}>
               {isLoading
                 ? "Running..."
-                : `Run ${listOperation.replace("-", " ")}`}
+                : `Run ${listOperation.replace(/-/g, " ")}`}
             </button>
 
-            {/* Show current list info */}
+            {listType === "doubly" && (
+              <div className="doubly-info" style={{
+                color: "#cbd5e0",
+                fontSize: "12px",
+                marginTop: "10px",
+                padding: "8px",
+                background: "#2d3748",
+                borderRadius: "5px",
+                textAlign: "center"
+              }}>
+                🔗 Doubly Linked List: Each node has pointers to both next and previous nodes
+              </div>
+            )}
+
             {linkedList && (
               <div
                 style={{
@@ -3269,7 +3302,7 @@ const AlgorithmPage = () => {
                   borderRadius: "5px",
                 }}
               >
-                List has {countListNodes(linkedList)} nodes
+                {listType === "doubly" ? "🔗 Doubly" : "🔗 Singly"} List has {countListNodes(linkedList)} nodes
               </div>
             )}
           </>

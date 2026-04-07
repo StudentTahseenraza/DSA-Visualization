@@ -2,7 +2,7 @@ const { linkedListOperations } = require("../index");
 
 exports.handleLinkedListOperation = (req, res) => {
   const { operation } = req.params;
-  const { value, listState } = req.body;
+  const { value, listState, listType } = req.body;
 
   // Validate based on operation type
   if (operation === "bulk-insert") {
@@ -13,7 +13,6 @@ exports.handleLinkedListOperation = (req, res) => {
       });
     }
   } else if (operation === "delete" || operation === "search" || operation === "insert") {
-    // For delete, search, and insert, value must be a number
     if (typeof value !== "number") {
       return res.status(400).json({ 
         error: `Value must be a number for ${operation} operation`,
@@ -21,8 +20,15 @@ exports.handleLinkedListOperation = (req, res) => {
         type: typeof value
       });
     }
-  } else if (operation !== "traverse") {
-    // For any other operation that's not traverse
+  } else if (operation === "insert-at-beginning" || operation === "insert-at-position") {
+    if (typeof value !== "number") {
+      return res.status(400).json({ 
+        error: `Value must be a number for ${operation} operation`,
+        receivedValue: value,
+        type: typeof value
+      });
+    }
+  } else if (operation !== "traverse" && operation !== "traverse-backward") {
     return res.status(400).json({ 
       error: `Unknown operation: ${operation}` 
     });
@@ -30,9 +36,9 @@ exports.handleLinkedListOperation = (req, res) => {
 
   try {
     console.log(`Processing ${operation} operation with value:`, value);
-    const result = linkedListOperations(operation, value, listState);
+    const isDoubly = listType === "doubly";
+    const result = linkedListOperations(operation, value, listState, { isDoubly });
     
-    // Ensure result has the expected structure
     if (!result.steps || !Array.isArray(result.steps)) {
       result.steps = [];
     }
@@ -40,7 +46,6 @@ exports.handleLinkedListOperation = (req, res) => {
       result.explanations = [];
     }
     
-    // Add success message based on operation
     let successMessage;
     switch(operation) {
       case 'delete':
@@ -50,10 +55,16 @@ exports.handleLinkedListOperation = (req, res) => {
         successMessage = `Search for value ${value} completed`;
         break;
       case 'traverse':
-        successMessage = 'List traversal completed';
+        successMessage = `List ${isDoubly ? 'forward ' : ''}traversal completed`;
+        break;
+      case 'traverse-backward':
+        successMessage = 'List backward traversal completed';
         break;
       case 'insert':
-        successMessage = `Successfully inserted value ${value}`;
+        successMessage = `Successfully inserted value ${value} at the end`;
+        break;
+      case 'insert-at-beginning':
+        successMessage = `Successfully inserted value ${value} at the beginning`;
         break;
       case 'bulk-insert':
         successMessage = `Successfully inserted ${value.length} values`;
@@ -64,7 +75,8 @@ exports.handleLinkedListOperation = (req, res) => {
     
     res.json({
       ...result,
-      message: successMessage
+      message: successMessage,
+      listType: isDoubly ? 'doubly' : 'singly'
     });
   } catch (error) {
     console.error(`Error in /api/linkedList/${operation}:`, error.message);
