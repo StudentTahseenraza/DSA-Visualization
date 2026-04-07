@@ -200,3 +200,275 @@
   .node-label { font-size: 14px; }
   .knapsack-items-grid { grid-template-columns: 1fr; }
 }
+
+/* styles/GraphViewer.css */
+.graph-viewer {
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+  border-radius: 12px;
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.graph-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(79, 172, 254, 0.3);
+}
+
+.graph-header h3 {
+  color: #4facfe;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.action-description {
+  color: #a0aec0;
+  font-size: 0.9rem;
+}
+
+.graph-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.stat-label {
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #4facfe;
+  font-family: monospace;
+  background: rgba(79, 172, 254, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Scrollable graph container */
+.graph-visualization-scroll {
+  flex: 1;
+  overflow: auto;
+  min-height: 400px;
+  max-height: 600px;
+  border-radius: 8px;
+  background: #0f0f1a;
+}
+
+.graph-svg-container {
+  display: inline-block;
+  min-width: 100%;
+  cursor: grab;
+}
+
+.graph-svg-container:active {
+  cursor: grabbing;
+}
+
+/* Custom scrollbar */
+.graph-visualization-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.graph-visualization-scroll::-webkit-scrollbar-track {
+  background: #1a1a2e;
+  border-radius: 5px;
+}
+
+.graph-visualization-scroll::-webkit-scrollbar-thumb {
+  background: #4facfe;
+  border-radius: 5px;
+}
+
+.graph-visualization-scroll::-webkit-scrollbar-thumb:hover {
+  background: #00f2fe;
+}
+
+/* Legend */
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(79, 172, 254, 0.2);
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #a0aec0;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-color.current {
+  background: #e74c3c;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.5);
+}
+
+.legend-color.visited {
+  background: #3498db;
+}
+
+.legend-color.path {
+  background: #27ae60;
+}
+
+.legend-color.queue {
+  background: #f1c40f;
+}
+
+.legend-color.mst-edge {
+  background: #2ecc71;
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-color.traversal-edge {
+  background: #e74c3c;
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.graph-info {
+  text-align: center;
+  padding: 40px;
+  color: #a0aec0;
+}
+
+.graph-info h4 {
+  color: #4facfe;
+  margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .graph-viewer {
+    padding: 12px;
+  }
+  
+  .graph-stats {
+    max-height: 80px;
+    gap: 8px;
+  }
+  
+  .stat-item {
+    font-size: 0.7rem;
+  }
+  
+  .graph-legend {
+    gap: 12px;
+  }
+  
+  .legend-item {
+    font-size: 0.65rem;
+  }
+}
+
+/* Updated legend colors */
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(79, 172, 254, 0.2);
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #a0aec0;
+}
+
+.legend-color {
+  width: 20px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-color.current {
+  background: #e74c3c;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.5);
+}
+
+.legend-color.visited {
+  background: #3498db;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-color.path {
+  background: #27ae60;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-color.queue {
+  background: #f1c40f;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.legend-color.mst-edge {
+  background: #2ecc71;
+  width: 30px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-color.traversal-edge {
+  background: #e74c3c;
+  width: 30px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-color.current-edge {
+  background: linear-gradient(90deg, #9b59b6, #ffffff, #9b59b6);
+  width: 30px;
+  height: 4px;
+  border-radius: 2px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

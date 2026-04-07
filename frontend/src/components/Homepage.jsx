@@ -6,7 +6,7 @@ import linkedListAnimation from "../../public/lottie/sorting.json";
 import treeAnimation from "../../public/lottie/linkedlist.json";
 import graphAnimation from "../../public/lottie/graph1.json";
 import recursionAnimation from "../../public/lottie/sorting.json";
-import quizAnimation from "../../public/lottie/sorting.json";
+// import quizAnimation from "../../public/lottie/sorting.json";
 import arrayAnimation from "../../public/lottie/sorting.json";
 import stackAnimation from "../../public/lottie/Stack.json";
 import queueAnimation from "../../public/lottie/Queue.json";
@@ -18,6 +18,7 @@ import comparisonAnimation from "../../public/lottie/sorting.json";
 import aiAssistantAnimation from "../../public/lottie/sorting.json"; // Using existing animation
 import "../styles/Homepage.css";
 import ThemeToggle from "./ThemeToggle";
+import quizAnimation from "../../public/lottie/sorting.json";
 
 const Homepage = () => {
   const algorithmCategories = [
@@ -186,20 +187,21 @@ const Homepage = () => {
       ],
     },
     {
-      title: "Quizzes & Practice",
-      description: "Test your knowledge",
+      title: "DSA Quiz & Learning Center",
+      description: "Interactive quizzes, AI tutor, step-by-step algorithm learning",
       animation: quizAnimation,
-      color: "#a29bfe",
-      path: "/quizzes",
+      color: "#f59e0b",
+      path: "/dsa-quiz",
       algorithms: [
-        "Complexity Analysis",
-        "Algorithm Challenges",
-        "Data Structure Quizzes",
-        "Problem Solving",
-        "Interview Prep",
-        "Mock Tests",
-        "Algorithm Comparisons",
+        "Algorithm Quizzes",
+        "AI Tutor Explanations",
+        "Step-by-Step Learning",
+        "Sorting Visualizations",
+        "Progress Tracking",
+        "Interactive Challenges",
       ],
+      isNew: true,
+      isQuizFeature: true,
     },
     // {
     //   title: "Bitmask / Bit Manipulation",
